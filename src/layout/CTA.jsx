@@ -1,6 +1,10 @@
 import Button from "../component/Button";
 import forward from "../assets/icon/Arrow forward.svg";
+import { useNavigate } from "react-router";
+
 export default function CTA() {
+  const navigate = useNavigate();
+
   return (
     <div className='bg-gradient-to-r from-blue-700 to-blue-900 px-4 py-12 text-center text-white space-y-7 md:px-15 lg:px-25 xl:px-45'>
       <h1 className='text-2xl font-bold'>
@@ -10,7 +14,10 @@ export default function CTA() {
         Schedule a consultation with one of our investment advisors to discuss
         how Kinnex Ltd can help you achieve your financial goals
       </p>
-      <Button className='bg-white text-blue-800 font-bold p-3 rounded-lg w-[80%] lg:w-[60%] xl:w-[40%]'>
+      <Button
+        onClick={() => navigate("/registration/login")}
+        className='bg-white text-blue-800 font-bold p-3 rounded-lg w-[80%] lg:w-[60%] xl:w-[40%]'
+      >
         <h1 className='inline-block'>Get Started Now</h1>
         <img src={forward} className='inline-block' />
       </Button>

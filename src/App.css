@@ -1,2 +1,5 @@
 @import 'tailwindcss';
 
+::placeholder{
+    @apply text-gray-400
+}
