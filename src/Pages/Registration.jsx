@@ -6,6 +6,9 @@ import { useEffect } from "react";
 
 export default function Registration() {
   const navigate = useNavigate();
+  useEffect(() => {
+    navigate("/registration/login");
+  }, []);
 
   return (
     <div className='flex pb-2 bg-gray-100 md:h-screen md:pb-1'>

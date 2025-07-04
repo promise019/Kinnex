@@ -122,7 +122,7 @@ export default function Login() {
             className={"bg-blue-800 text-white p-3 rounded-lg"}
             onClick={(e) => handleSubmit(e)}
           >
-            Create account
+            Log In
           </Button>
         </section>
       </form>
