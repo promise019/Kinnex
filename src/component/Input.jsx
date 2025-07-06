@@ -5,9 +5,11 @@ export default function Input({
   className,
   placeholder,
   name,
+  ref,
 }) {
   return (
     <input
+      ref={ref}
       type={type}
       value={value}
       onChange={onChange}

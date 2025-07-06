@@ -9,7 +9,7 @@ const plans = [
   { plan: 2, amount: 6000, returns: 1200, roi: 20 },
   { plan: 3, amount: 10000, returns: 2000, roi: 20 },
   { plan: 4, amount: 15000, returns: 3000, roi: 20 },
-  { plan: 5, amount: 25000, returns: 500, roi: 20 },
+  { plan: 5, amount: 25000, returns: 5000, roi: 20 },
   { plan: 6, amount: 50000, returns: 10000, roi: 20 },
   { plan: 7, amount: 100000, returns: 20000, roi: 20 },
   { plan: 8, amount: 200000, returns: 40000, roi: 20 },
