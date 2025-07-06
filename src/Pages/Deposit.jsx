@@ -31,7 +31,7 @@ export default function Deposit() {
       <p className='mt-12 mb-3'>Add funds to your investment account</p>
       <main className='bg-white p-4 rounded-lg space-y-5 md:w-full'>
         <section className='space-x-2 space-y-2 md:p-2'>
-          <h1 className='text-'>Select Payment Method</h1>
+          <h1 className='font-bold'>Select Payment Method</h1>
           <Button
             className='p-3 rounded-lg space-x-1 bg-gray-50'
             onClick={() => console.log("button clicked")}

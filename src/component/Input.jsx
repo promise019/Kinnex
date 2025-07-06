@@ -6,6 +6,7 @@ export default function Input({
   placeholder,
   name,
   ref,
+  readOnly,
 }) {
   return (
     <input
@@ -16,6 +17,7 @@ export default function Input({
       className={className}
       placeholder={placeholder}
       name={name}
+      readOnly={readOnly}
     />
   );
 }
