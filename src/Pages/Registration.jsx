@@ -7,7 +7,7 @@ import { useEffect } from "react";
 export default function Registration() {
   const navigate = useNavigate();
   useEffect(() => {
-    navigate("/registration/login");
+    navigate("/registration/signup");
   }, []);
 
   return (

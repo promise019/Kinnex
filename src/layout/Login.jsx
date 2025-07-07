@@ -37,6 +37,8 @@ export default function Login() {
     signInWithEmailAndPassword(auth, userData.email, userData.password)
       .then((usercredential) => {
         const user = usercredential.user;
+        sessionStorage.setItem("kinnex-login", user.uid);
+
         if (agree) {
           //remember user
           localStorage.setItem("kinnex-login", user.uid);
@@ -56,8 +58,8 @@ export default function Login() {
           case "auth/wrong-password":
             toast.error("incorrect password");
             break;
-          default:
-            toast.error("unable to login");
+          case "auth/network-request-failed":
+            toast.error("network error");
             break;
         }
         setIsloading(false);

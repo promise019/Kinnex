@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import Input from "../component/Input";
 import { Link, useNavigate } from "react-router";
 import Button from "../component/Button";
@@ -6,17 +7,38 @@ import HideShowComponent from "../component/Show_Hide";
 
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  increment,
+  where,
+  serverTimestamp,
+  addDoc,
+} from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import { LoadingIndicator1 } from "../component/Loading indicator";
 
 export default function Signup() {
+  const [searchParams] = useSearchParams();
+  const [referrerCode, setReferrerCode] = useState(null);
+
+  // get and set referrer code on-mount
+  useEffect(() => {
+    const code = searchParams.get("ref");
+    if (code) setReferrerCode(code);
+  }, [searchParams]);
+
   const [showpassword, setShowpassword] = useState(false);
   const [agree, setAgree] = useState(true); //terms and conditions and privacy policy
   const [isloading, setIsloading] = useState(false); //loading component
 
   const navigate = useNavigate();
 
+  //make users unable to submit data twice by disabling the submit button
   useEffect(() => {
     isloading ? setAgree(false) : setAgree(true);
   }, [isloading]);
@@ -42,27 +64,102 @@ export default function Signup() {
     e.preventDefault();
 
     if (firstname === "" || lastname === "" || email === "")
-      return toast.error("Please fill the form bellow");
+      return toast.error("Please fill the form below");
 
     setIsloading(true);
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((usercredential) => {
         const user = usercredential.user;
-
         const docRef = doc(db, "users", user.uid);
-        setDoc(docRef, {
-          Firstname: firstname,
-          Lastname: lastname,
-          Email: email,
-        })
-          .then(() => {
-            toast.success("Account successfully created");
-            setIsloading(false);
-            navigate("/registration/login");
+
+        // Check if referral code exists
+        if (referrerCode) {
+          const refQuery = query(
+            collection(db, "users"),
+            where("ReferralCode", "==", referrerCode)
+          );
+
+          //get corresponding document
+          getDocs(refQuery)
+            .then((refSnap) => {
+              if (!refSnap.empty) {
+                const referrer = refSnap.docs[0];
+                const referrerUID = referrer.id;
+
+                // Increment referrer's referralCount
+                const referrerDocRef = doc(db, "users", referrerUID);
+                updateDoc(referrerDocRef, {
+                  referralCount: increment(1),
+                });
+
+                //create a collection of users
+                const refs = collection(db, "users", referrerUID, "refs");
+                const date = new Date();
+                addDoc(refs, {
+                  date: date.toLocaleDateString("default", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }),
+                  name: firstname,
+                });
+
+                // Save new user with referrer info
+                return setDoc(docRef, {
+                  Firstname: firstname,
+                  Lastname: lastname,
+                  Email: email,
+                  ReferralCode: `${firstname}-${user.uid}`,
+                  ReferredBy: referrerCode,
+                  createdAt: serverTimestamp(),
+                  referralCount: 0,
+                });
+              } else {
+                // Referral code not found, proceed without it
+                return setDoc(docRef, {
+                  Firstname: firstname,
+                  Lastname: lastname,
+                  Email: email,
+                  ReferralCode: `${firstname}-${user.uid}`,
+                  ReferredBy: null,
+                  createdAt: serverTimestamp(),
+                  referralCount: 0,
+                });
+              }
+            })
+            .then(() => {
+              toast.success("Account successfully created");
+              setIsloading(false);
+              navigate("/registration/login");
+            })
+            .catch((err) => {
+              console.log(err.code);
+              toast.error("Error creating account");
+              setIsloading(false);
+            });
+        } else {
+          // No referral code provided
+          setDoc(docRef, {
+            Firstname: firstname,
+            Lastname: lastname,
+            Email: email,
+            ReferralCode: `${firstname}-${user.uid}`,
+            ReferredBy: null,
+            createdAt: serverTimestamp(),
+            referralCount: 0,
           })
-          .catch((err) => {
-            console.log(err.code);
-          });
+            .then(() => {
+              toast.success("Account successfully created");
+              setIsloading(false);
+              navigate("/registration/login");
+            })
+            .catch((err) => {
+              console.log(err.code);
+              toast.error("Error creating account");
+              setIsloading(false);
+            });
+        }
       })
       .catch((error) => {
         switch (error.code) {
