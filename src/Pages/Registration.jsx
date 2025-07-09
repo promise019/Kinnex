@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router";
 import kinnex from "../assets/icon/Frame (2).svg";
 import kinnex1 from "../assets/icon/Frame (2) (copy).svg";
 import arrow from "../assets/icon/arror right.svg";
@@ -6,8 +6,15 @@ import { useEffect } from "react";
 
 export default function Registration() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
-    navigate("/registration/signup");
+    const isAtRegistrationRoot = location.pathname === "/registration/signup";
+    if (isAtRegistrationRoot) {
+      navigate(`/registration/signup${location.search}`);
+    } else if (!isAtRegistrationRoot) {
+      navigate("/registration/login");
+    }
   }, []);
 
   return (
