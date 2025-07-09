@@ -75,6 +75,7 @@ export default function Signup() {
 
         // Check if referral code exists
         if (referrerCode) {
+          console.log(referrerCode);
           const refQuery = query(
             collection(db, "users"),
             where("ReferralCode", "==", referrerCode)
@@ -110,7 +111,7 @@ export default function Signup() {
                   Firstname: firstname,
                   Lastname: lastname,
                   Email: email,
-                  ReferralCode: `${firstname}-${user.uid}`,
+                  ReferralCode: user.uid,
                   ReferredBy: referrerCode,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
@@ -121,7 +122,7 @@ export default function Signup() {
                   Firstname: firstname,
                   Lastname: lastname,
                   Email: email,
-                  ReferralCode: `${firstname}-${user.uid}`,
+                  ReferralCode: user.uid,
                   ReferredBy: null,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
@@ -137,6 +138,7 @@ export default function Signup() {
               console.log(err.code);
               toast.error("Error creating account");
               setIsloading(false);
+              setAgree(false);
             });
         } else {
           // No referral code provided
@@ -144,7 +146,7 @@ export default function Signup() {
             Firstname: firstname,
             Lastname: lastname,
             Email: email,
-            ReferralCode: `${firstname}-${user.uid}`,
+            ReferralCode: user.uid,
             ReferredBy: null,
             createdAt: serverTimestamp(),
             referralCount: 0,
@@ -158,6 +160,7 @@ export default function Signup() {
               console.log(err.code);
               toast.error("Error creating account");
               setIsloading(false);
+              setAgree(false);
             });
         }
       })
@@ -179,7 +182,10 @@ export default function Signup() {
         setIsloading(false);
         console.log(error.code);
       })
-      .finally(() => setIsloading(false));
+      .finally(() => {
+        setIsloading(false);
+        setAgree(false);
+      });
   }
 
   return (

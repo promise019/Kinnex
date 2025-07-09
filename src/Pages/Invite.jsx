@@ -41,7 +41,7 @@ export default function Invite() {
           if (docsnap.exists()) {
             const userData = docsnap.data();
             setReferralData({
-              link: `https://www.kinnex-rho.vercel.app/registration/signup?ref=${userData.ReferralCode}`,
+              link: `localhost:5173/registration/signup?ref=${userData.ReferralCode}`,
               points: userData.referralCount,
             });
           }
