@@ -5,7 +5,10 @@ import Button from "../component/Button";
 import bank from "../assets/icon/Bank.svg";
 import paystack from "../assets/icon/Paystack.svg";
 import crypto from "../assets/icon/Frame (15) (1).svg";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import PaystackButton from "../component/PaystackButton";
+import { ToastContainer } from "react-toastify";
+import { userDataContext } from "../context/UserDataContext";
 
 const plans = [
   { plan: 1, amount: 3000, returns: 600, roi: 20 },
@@ -23,22 +26,38 @@ const plans = [
 
 export default function Deposit() {
   const [amount, setAmount] = useState();
+  const [amountError, setAmountError] = useState("");
   const inputRef = useRef(null);
+  const { referralData } = useContext(userDataContext);
+
+  function checkAmount() {
+    if (amount < 3000) {
+      setAmountError("Minimum Deposit Amount is 3,000 Naira");
+    } else {
+      setAmountError("");
+    }
+  }
+
+  useEffect(() => {
+    checkAmount();
+  }, [amount]);
 
   return (
     <div className='bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]'>
+      <ToastContainer />
       <Header Page={"Deposit Funds"} />
       <p className='mt-12 mb-3'>Add funds to your investment account</p>
       <main className='bg-white p-4 rounded-lg space-y-5 md:w-full'>
         <section className='space-x-2 space-y-2 md:p-2'>
           <h1 className='font-bold'>Select Payment Method</h1>
-          <Button
+          <PaystackButton
+            amount={amount}
+            email={referralData.email}
             className='p-3 rounded-lg space-x-1 bg-gray-50'
-            onClick={() => console.log("button clicked")}
           >
             <img src={paystack} className='w-5 inline-block' />
             <span> Paystack</span>
-          </Button>
+          </PaystackButton>
           <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
             <img src={bank} className='w-6 inline-block' />
             <span>Bank Transfer</span>
@@ -56,9 +75,14 @@ export default function Deposit() {
             value={amount}
             type={"Number"}
             onChange={(e) => setAmount(e.target.value)}
-            className={"w-full p-3 rounded-lg bg-gray-100"}
+            className={`w-full p-3 rounded-lg bg-gray-100 ${
+              amount < 3000
+                ? "text-red-700 border border-red-700 hover:border-red-700"
+                : ""
+            }`}
             placeholder='&#8358; 5,000.00'
           />
+          <p className='text-sm text-red-700'>{amountError}</p>
           <section className='w-full overflow-x-auto flex p-2 space-x-4'>
             {plans.map((i) => (
               <Button

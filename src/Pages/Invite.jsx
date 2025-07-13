@@ -6,65 +6,15 @@ import facebook from "../assets/icon/Frame (20).svg";
 import twitter from "../assets/icon/Frame (19).svg";
 import email from "../assets/icon/Frame (18).svg";
 import share from "../assets/icon/Frame (17).svg";
-import { useEffect, useState } from "react";
-import { useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
+
+import { userDataContext } from "../context/UserDataContext";
 
 export default function Invite() {
-  const [referralData, setReferralData] = useState({
-    link: "",
-    points: 0,
-  });
-  const [refList, setRefList] = useState([]);
+  const { referralData, refList } = useContext(userDataContext);
 
   const [copied, setCopied] = useState(false);
-  const currentUser =
-    sessionStorage.getItem("kinnex-login") ||
-    localStorage.getItem("kinnes-login");
-
-  useEffect(() => {
-    //get referral details
-    onAuthStateChanged(auth, (user) => {
-      if (currentUser) {
-        const docRef = doc(db, "users", currentUser);
-        getDoc(docRef).then((docsnap) => {
-          if (docsnap.exists()) {
-            const userData = docsnap.data();
-            setReferralData({
-              link: `kinnex-rho.vercel.app/registration/signup?ref=${userData.ReferralCode}`,
-              points: userData.referralCount,
-            });
-          }
-        });
-      }
-    });
-
-    //get referral collection
-    const referralRef = collection(db, "users", currentUser, "refs");
-    const q = query(referralRef, orderBy("date"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const refs = snapshot.docs.map((docs) => ({
-        id: docs.id,
-        date: docs.data().date,
-        name: docs.data().name,
-      }));
-
-      setRefList(refs);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   async function copyLink() {
     try {
