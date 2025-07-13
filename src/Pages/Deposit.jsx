@@ -58,10 +58,10 @@ export default function Deposit() {
             <img src={paystack} className='w-5 inline-block' />
             <span> Paystack</span>
           </PaystackButton>
-          <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
+          {/* <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
             <img src={bank} className='w-6 inline-block' />
             <span>Bank Transfer</span>
-          </Button>
+          </Button> */}
           <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
             <img src={crypto} className='w-6 inline-block' />
             <span>Cryptocurrency</span>

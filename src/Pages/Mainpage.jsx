@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import NavBar from "../layout/NavBar";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useCallback } from "react";
 import { userDataContext } from "../context/UserDataContext";
 
 export default function Mainpage() {
@@ -8,6 +8,11 @@ export default function Mainpage() {
     sessionStorage.getItem("kinnex-login") ||
     localStorage.getItem("kinnex-login");
   const { getUserData, setCurrentUser } = useContext(userDataContext);
+
+  // reload to get uid from localstorage on firstmount
+  const reload = useCallback(() => {
+    window.location.reload();
+  }, []);
 
   useEffect(() => {
     setCurrentUser(currentUser);
