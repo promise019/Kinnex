@@ -1,18 +1,33 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import NavBar from "../layout/NavBar";
 import { useContext, useEffect, useCallback } from "react";
 import { userDataContext } from "../context/UserDataContext";
 
 export default function Mainpage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const currentUser =
     sessionStorage.getItem("kinnex-login") ||
     localStorage.getItem("kinnex-login");
+
   const { getUserData, setCurrentUser } = useContext(userDataContext);
 
   // reload to get uid from localstorage on firstmount
   const reload = useCallback(() => {
-    window.location.reload();
-  }, []);
+    navigate(location.pathname, { replace: true });
+  }, [currentUser]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  //if user isnt logged in, throw user back to login
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/registration/login");
+    }
+  });
 
   useEffect(() => {
     setCurrentUser(currentUser);

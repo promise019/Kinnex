@@ -2,13 +2,13 @@ import { NavLink, Outlet, useNavigate, useLocation } from "react-router";
 import kinnex from "../assets/icon/Frame (2).svg";
 import kinnex1 from "../assets/icon/Frame (2) (copy).svg";
 import arrow from "../assets/icon/arror right.svg";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Registration() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
+  const shouldReload = useCallback(() => {
     const isAtRegistrationRoot = location.pathname === "/registration/signup";
     if (isAtRegistrationRoot) {
       navigate(`/registration/signup${location.search}`);
@@ -16,6 +16,10 @@ export default function Registration() {
       navigate("/registration/login");
     }
   }, []);
+
+  useEffect(() => {
+    shouldReload();
+  }, [shouldReload]);
 
   return (
     <div className='flex pb-2 bg-gray-100 md:h-screen md:pb-1'>
