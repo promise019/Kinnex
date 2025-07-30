@@ -7,8 +7,9 @@ import paystack from "../assets/icon/Paystack.svg";
 import crypto from "../assets/icon/Frame (15) (1).svg";
 import { useContext, useEffect, useRef, useState } from "react";
 import PaystackButton from "../component/PaystackButton";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { userDataContext } from "../context/UserDataContext";
+import { auth } from "../firebase";
 
 const plans = [
   { plan: 1, amount: 3000, returns: 600, roi: 20 },
@@ -25,7 +26,7 @@ const plans = [
 ];
 
 export default function Deposit() {
-  const [amount, setAmount] = useState();
+  const {amount, setAmount} = useContext(userDataContext);
   const [amountError, setAmountError] = useState("");
   const inputRef = useRef(null);
   const { referralData } = useContext(userDataContext);
@@ -43,27 +44,28 @@ export default function Deposit() {
   }, [amount]);
 
   return (
-    <div className='bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]'>
+    <div className="bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]">
       <ToastContainer />
       <Header Page={"Deposit Funds"} />
-      <p className='mt-12 mb-3'>Add funds to your investment account</p>
-      <main className='bg-white p-4 rounded-lg space-y-5 md:w-full'>
-        <section className='space-x-2 space-y-2 md:p-2'>
-          <h1 className='font-bold'>Select Payment Method</h1>
+      <p className="mt-12 mb-3">Add funds to your investment account</p>
+      <main className="bg-white p-4 rounded-lg space-y-5 md:w-full">
+        <section className="space-x-2 space-y-2 md:p-2">
+          <h1 className="font-bold">Select Payment Method</h1>
           <PaystackButton
+            onSuccess={handleSuccess}
             amount={amount}
             email={referralData.email}
-            className='p-3 rounded-lg space-x-1 bg-gray-50'
+            className="p-3 rounded-lg space-x-1 bg-gray-50"
           >
-            <img src={paystack} className='w-5 inline-block' />
+            <img src={paystack} className="w-5 inline-block" />
             <span> Paystack</span>
           </PaystackButton>
           {/* <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
             <img src={bank} className='w-6 inline-block' />
             <span>Bank Transfer</span>
           </Button> */}
-          <Button className='p-3 rounded-lg space-x-1 bg-gray-50'>
-            <img src={crypto} className='w-6 inline-block' />
+          <Button className="p-3 rounded-lg space-x-1 bg-gray-50">
+            <img src={crypto} className="w-6 inline-block" />
             <span>Cryptocurrency</span>
           </Button>
         </section>
@@ -80,14 +82,14 @@ export default function Deposit() {
                 ? "text-red-700 border border-red-700 hover:border-red-700"
                 : ""
             }`}
-            placeholder='&#8358; 5,000.00'
+            placeholder="&#8358; 5,000.00"
           />
-          <p className='text-sm text-red-700'>{amountError}</p>
-          <section className='w-full overflow-x-auto flex p-2 space-x-4'>
+          <p className="text-sm text-red-700">{amountError}</p>
+          <section className="w-full overflow-x-auto flex p-2 space-x-4">
             {plans.map((i) => (
               <Button
                 key={i.plan}
-                className='p-1.5 border border-gray-400 rounded-2xl '
+                className="p-1.5 border border-gray-400 rounded-2xl "
                 onClick={() => setAmount(i.amount)}
               >
                 &#8358;{i.amount}
@@ -96,9 +98,9 @@ export default function Deposit() {
           </section>
         </section>
 
-        <section className='flex space-x-2 bg-gray-100 p-2 rounded-lg '>
-          <img src={I} className='w-6' />
-          <p className='text-blue-800'>
+        <section className="flex space-x-2 bg-gray-100 p-2 rounded-lg ">
+          <img src={I} className="w-6" />
+          <p className="text-blue-800">
             Funds will be available in your account within 24 hours.
             <br />
             Minimum Deposit: &#8358;3,000

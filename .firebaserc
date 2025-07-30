@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "idealcrypto-hub"
-  }
+    "default": "kinnex-b7001",
+    "company": "kinnex-b7001"
+  },
+  "targets": {},
+  "etags": {}
 }

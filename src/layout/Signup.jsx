@@ -115,6 +115,7 @@ export default function Signup() {
                   ReferredBy: referrerCode,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
+                  
                 });
               } else {
                 // Referral code not found, proceed without it
@@ -126,6 +127,7 @@ export default function Signup() {
                   ReferredBy: null,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
+                 
                 });
               }
             })
@@ -150,6 +152,7 @@ export default function Signup() {
             ReferredBy: null,
             createdAt: serverTimestamp(),
             referralCount: 0,
+           
           })
             .then(() => {
               toast.success("Account successfully created");

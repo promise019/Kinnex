@@ -2,6 +2,7 @@ import { createContext, useState } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
@@ -19,6 +20,7 @@ export default function UserDataProvider({ children }) {
     email: "",
   });
   const [refList, setRefList] = useState([]);
+  const [amount, setAmount] = useState();
 
   const [currentUser, setCurrentUser] = useState(
     sessionStorage.getItem("kinnex-login")
@@ -61,9 +63,39 @@ export default function UserDataProvider({ children }) {
     return () => unsubscribe();
   };
 
+  //submit transaction to database after payment
+  const submitTransaction = (response) => {
+    const transactionRef = collection(db, "users", currentUser, "transaction");
+    const date = new Date();
+    addDoc(transactionRef, {
+      date: date.toLocaleDateString("default", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      amount: amount,
+    })
+      .then((res) => {
+        console.log(response);
+        toast.success("transaction successful");
+      })
+      .catch((res) => {
+        console.log(res, 'transaction error');
+        toast.success("transaction error");
+      });
+  };
+
   return (
     <userDataContext.Provider
-      value={{ referralData, refList, getUserData, setCurrentUser }}
+      value={{
+        referralData,
+        refList,
+        getUserData,
+        setCurrentUser,
+        submitTransaction,
+        amount,
+        setAmount,
+      }}
     >
       {children}
     </userDataContext.Provider>
