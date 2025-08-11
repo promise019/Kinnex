@@ -12,7 +12,7 @@ export default function Withdraw() {
   const [amount, setAmount] = useState();
 
   return (
-    <div className='bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]'>
+    <div className='bg-gray-100 p-3 min-h-screen z-4 md:ml-[30%] lg:ml-[25%] md:w-[70%] lg:w-[75%]'>
       <Header Page={"Withdraw Funds"} />
       <p className='mt-12 mb-3'>Withdraw funds from your investment account</p>
       <main className='bg-white p-4 rounded-lg space-y-7 md:w-full'>

@@ -44,7 +44,7 @@ export default function Deposit() {
   }, [amount]);
 
   return (
-    <div className="bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]">
+    <div className="bg-gray-100 p-3 min-h-screen z-4 md:ml-[30%] lg:ml-[25%] md:w-[70%] lg:w-[75%]">
       <ToastContainer />
       <Header Page={"Deposit Funds"} />
       <p className="mt-12 mb-3">Add funds to your investment account</p>
@@ -52,7 +52,7 @@ export default function Deposit() {
         <section className="space-x-2 space-y-2 md:p-2">
           <h1 className="font-bold">Select Payment Method</h1>
           <PaystackButton
-            onSuccess={handleSuccess}
+            // onSuccess={handleSuccess}
             amount={amount}
             email={referralData.email}
             className="p-3 rounded-lg space-x-1 bg-gray-50"

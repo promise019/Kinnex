@@ -43,7 +43,7 @@ export default function Invite() {
   }
 
   return (
-    <div className='bg-gray-100 p-3 min-h-screen z-4 md:w-[70%] lg:w-[75%]'>
+    <div className='bg-gray-100 p-3 min-h-screen z-4 md:ml-[30%] lg:ml-[25%] md:w-[70%] lg:w-[75%]'>
       <ToastContainer />
       <Header Page={"Referral"} />
       <main className='lg:flex lg:space-x-2 lg:mt-3 '>
