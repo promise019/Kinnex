@@ -13,6 +13,8 @@ import Invite from "./Pages/Invite";
 import Checkin from "./Pages/Checkins";
 import Settings from "./Pages/Settings";
 import Notification from "./Pages/Notification";
+import AccountSetting from "./layout/AccountSettings";
+import PasswordSettings from "./layout/PasswordSettings";
 
 export default function App() {
   return (
@@ -30,7 +32,10 @@ export default function App() {
           <Route path='withdraw' element={<Withdraw />} />
           <Route path='invite' element={<Invite />} />
           <Route path='check-in' element={<Checkin />} />
-          <Route path='settings' element={<Settings />} />
+          <Route path='settings' element={<Settings />}>
+            <Route path="accountinfo" element={<AccountSetting/>}/>
+            <Route path="passwordsettings" element={<PasswordSettings/>}/>
+          </Route>
           <Route path="notification" element={<Notification/>}/>
         </Route>
       </Routes>

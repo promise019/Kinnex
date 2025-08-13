@@ -18,6 +18,8 @@ export default function UserDataProvider({ children }) {
     link: "",
     points: 0,
     email: "",
+    Firstname:'',
+    Lastname:'',
   });
   const [refList, setRefList] = useState([]);
   const [amount, setAmount] = useState();
@@ -40,6 +42,8 @@ export default function UserDataProvider({ children }) {
               link: `kinnex-rho.vercel.app/registration/signup?ref=${userData.ReferralCode}`,
               points: userData.referralCount,
               email: userData.Email,
+              Firstname:userData.Firstname,
+              Lastname:userData.Lastname
             });
           }
         });
