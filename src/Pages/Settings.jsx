@@ -11,7 +11,7 @@ export default function Settings() {
         Manage your account settings and preferences
       </h1>
       <section className="flex space-x-3">
-        <nav className="shadow rounded-tl-xl bg-white grid h-24 w-fit md:w-[30%] md:p-3">
+        <nav className="shadow rounded-tl-xl bg-white grid h-24 w-fit md:w-[40%] md:h-30 md:p-3">
           <NavLink
             to="accountinfo"
             className={({ isActive }) =>
@@ -24,7 +24,14 @@ export default function Settings() {
             <span className="hidden md:inline-block">Account</span>
           </NavLink>
 
-          <NavLink to='passwordsettings' className={({ isActive }) => `w-full p-2 md:space-x-2 rounded-lg`}>
+          <NavLink
+            to="passwordsettings"
+            className={({ isActive }) =>
+              `w-full p-2 md:space-x-2 rounded-lg ${
+                isActive ? "bg-blue-300 text-blue-700" : ""
+              }`
+            }
+          >
             <img src={passkey} className="inline-block w-7" />
             <span className="hidden md:inline-block">Password</span>
           </NavLink>
