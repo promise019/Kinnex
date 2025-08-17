@@ -3,13 +3,12 @@ import account from "../assets/icon/Account.svg";
 import Input from "../component/Input";
 import { userDataContext } from "../context/UserDataContext";
 import Button from "../component/Button";
+import { useNavigate } from "react-router";
 
 export default function AccountSetting() {
   const { referralData } = useContext(userDataContext);
 
-  const updateData = async (e) => {
-    e.preventDefault();
-  };
+  const navigate = useNavigate()
   return (
     <section className="rounded-tr-xl w-full bg-white shadow p-2 space-y-2">
       <div className="flex space-x-2.5">
@@ -39,12 +38,12 @@ export default function AccountSetting() {
           readOnly={true}
           className="p-2 shadow w-full lg:w-[98%]"
         />
-        {/* <Button
-          onClick={(e) => updateData(e)}
-          className="bg-blue-600 text-white p-2 rounded-lg font-bold"
+        <Button
+          onClick={(e) => (localStorage.removeItem('kinnex-login'), navigate("/registration/login"))}
+          className="bg-blue-600 text-white p-2 rounded-lg font-bold md:hidden"
         >
-          Update
-        </Button> */}
+          Logout
+        </Button>
       </form>
     </section>
   );

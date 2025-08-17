@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import dashboard from "../assets/icon/dashboard.svg";
 import deposit from "../assets/icon/deposit.svg";
 import withdraw from "../assets/icon/withdraw.svg";
@@ -9,13 +9,14 @@ import settings from "../assets/icon/Frame (10) (1).svg";
 import logout from "../assets/icon/logout.svg";
 
 export default function NavBar() {
+  const navigate = useNavigate();
   return (
-    <nav className='bg-[#1E3A8A] text-white p-3  fixed bottom-0 z-3 left-0 w-screen md:w-[30%] md:h-screen lg:w-[25%]'>
-      <h1 className='hidden md:block font-bold text-2xl mb-10 '>Kinnex Ltd</h1>
+    <nav className="bg-[#1E3A8A] text-white p-3  fixed bottom-0 z-3 left-0 w-screen md:w-[30%] md:h-screen lg:w-[25%]">
+      <h1 className="hidden md:block font-bold text-2xl mb-10 ">Kinnex Ltd</h1>
       {/* <br className='hidden md:block' /> */}
-      <section className='flex md:pl-0 justify-between w-screen md:h-fit md:grid md:space-y-4 '>
+      <section className="flex md:pl-0 justify-between w-screen md:h-fit md:grid md:space-y-4 ">
         <NavLink
-          to='dashboard'
+          to="dashboard"
           className={({ isActive }) =>
             `${
               isActive
@@ -24,12 +25,12 @@ export default function NavBar() {
             } flex ml-5 md:ml-0 md:space-x-4 md:min-w-[200px] lg:min-w-[240px] p-3 xl:min-w-[320px]`
           }
         >
-          <img src={dashboard} className='w-7 md:inline-block' />
-          <span className='hidden md:flex'>Dashboard</span>
+          <img src={dashboard} className="w-7 md:inline-block" />
+          <span className="hidden md:flex">Dashboard</span>
         </NavLink>
 
         <NavLink
-          to='deposit'
+          to="deposit"
           className={({ isActive }) =>
             `${
               isActive
@@ -38,12 +39,12 @@ export default function NavBar() {
             } flex md:space-x-4 md:w-full p-3`
           }
         >
-          <img src={deposit} className='w-7 md:inline' />
-          <span className='hidden md:inline-block'>Deposit</span>
+          <img src={deposit} className="w-7 md:inline" />
+          <span className="hidden md:inline-block">Deposit</span>
         </NavLink>
 
         <NavLink
-          to='withdraw'
+          to="withdraw"
           className={({ isActive }) =>
             `${
               isActive
@@ -52,12 +53,12 @@ export default function NavBar() {
             } flex md:space-x-4 md:w-full p-3`
           }
         >
-          <img src={withdraw} className='w-7' />
-          <span className='hidden md:inline-block'>Withdraw</span>
+          <img src={withdraw} className="w-7" />
+          <span className="hidden md:inline-block">Withdraw</span>
         </NavLink>
 
         <NavLink
-          to='invite'
+          to="invite"
           className={({ isActive }) =>
             `${
               isActive
@@ -66,8 +67,8 @@ export default function NavBar() {
             } flex md:space-x-4 md:w-full p-3`
           }
         >
-          <img src={invite} className='w-7' />
-          <span className='hidden md:inline-block'>Invite Members</span>
+          <img src={invite} className="w-7" />
+          <span className="hidden md:inline-block">Invite Members</span>
         </NavLink>
 
         {/* <NavLink
@@ -86,9 +87,9 @@ export default function NavBar() {
 
         <br />
 
-        <section className='fixed right-3 top-3 md:static md:grid'>
+        <section className="fixed right-3 top-3 md:static md:grid">
           <NavLink
-            to='settings'
+            to="settings"
             className={({ isActive }) =>
               `${
                 isActive
@@ -97,13 +98,19 @@ export default function NavBar() {
               } flex md:space-x-4 rounded-full p-2 md:w-full`
             }
           >
-            <img src={settings} className='w-7' />
-            <span className='hidden md:inline-block'>Settings</span>
+            <img src={settings} className="w-7" />
+            <span className="hidden md:inline-block">Settings</span>
           </NavLink>
 
-          <Button className='hidden md:flex space-x-4 w-full p-3 md:rounded-lg'>
-            <img src={logout} className='w-7' />
-            <span className='hidden md:inline-block'>Log Out</span>
+          <Button
+            className="hidden md:flex space-x-4 w-full p-3 md:rounded-lg"
+            onClick={() => (
+              localStorage.removeItem("kinnex-login"),
+              navigate("/registration/login")
+            )}
+          >
+            <img src={logout} className="w-7" />
+            <span className="hidden md:inline-block">Log Out</span>
           </Button>
         </section>
       </section>
