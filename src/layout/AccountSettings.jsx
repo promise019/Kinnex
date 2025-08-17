@@ -39,12 +39,12 @@ export default function AccountSetting() {
           readOnly={true}
           className="p-2 shadow w-full lg:w-[98%]"
         />
-        <Button
+        {/* <Button
           onClick={(e) => updateData(e)}
           className="bg-blue-600 text-white p-2 rounded-lg font-bold"
         >
           Update
-        </Button>
+        </Button> */}
       </form>
     </section>
   );

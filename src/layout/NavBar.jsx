@@ -13,7 +13,7 @@ export default function NavBar() {
     <nav className='bg-[#1E3A8A] text-white p-3  fixed bottom-0 z-3 left-0 w-screen md:w-[30%] md:h-screen lg:w-[25%]'>
       <h1 className='hidden md:block font-bold text-2xl mb-10 '>Kinnex Ltd</h1>
       {/* <br className='hidden md:block' /> */}
-      <section className='flex justify-between w-screen md:h-fit md:grid md:space-y-4 '>
+      <section className='flex md:pl-0 justify-between w-screen md:h-fit md:grid md:space-y-4 '>
         <NavLink
           to='dashboard'
           className={({ isActive }) =>
@@ -21,7 +21,7 @@ export default function NavBar() {
               isActive
                 ? "bg-[#1D4ED8] rounded-full font-bold md:rounded-lg"
                 : ""
-            } flex md:space-x-4 md:min-w-[200px] lg:min-w-[240px] p-3 xl:min-w-[320px]`
+            } flex ml-5 md:ml-0 md:space-x-4 md:min-w-[200px] lg:min-w-[240px] p-3 xl:min-w-[320px]`
           }
         >
           <img src={dashboard} className='w-7 md:inline-block' />
@@ -70,7 +70,7 @@ export default function NavBar() {
           <span className='hidden md:inline-block'>Invite Members</span>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to='check-in'
           className={({ isActive }) =>
             `${
@@ -82,7 +82,7 @@ export default function NavBar() {
         >
           <img src={checkin} className='w-7' />
           <span className='hidden md:inline-block'>Daily Check-in</span>
-        </NavLink>
+        </NavLink> */}
 
         <br />
 

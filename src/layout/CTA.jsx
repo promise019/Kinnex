@@ -22,12 +22,12 @@ export default function CTA() {
         <img src={forward} className='inline-block' />
       </Button>
 
-      <section className='space-x-4'>
+      {/* <section className='space-x-4'>
         <span>Whatsapp</span>
         <span>
           <b>+2349167950558</b>
         </span>
-      </section>
+      </section> */}
     </div>
   );
 }
