@@ -56,7 +56,7 @@ export default function Overview({}) {
         <li>Minimum Withdrawal Amount &#8358;1,000</li>
         <li>Withdrawal Fees: 10%</li>
         <li>
-          Referral bonuses: 15% (1st level), 3% (2nd level), 1% (3rd level){" "}
+          Referral bonuses: 25% (1st level), 3% (2nd level), 1% (3rd level){" "}
         </li>
       </section>
 
