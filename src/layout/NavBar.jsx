@@ -106,6 +106,7 @@ export default function NavBar() {
             className="hidden md:flex space-x-4 w-full p-3 md:rounded-lg"
             onClick={() => (
               localStorage.removeItem("kinnex-login"),
+              sessionStorage.removeItem("kinnex-login"),
               navigate("/registration/login")
             )}
           >

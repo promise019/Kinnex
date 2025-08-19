@@ -18,14 +18,19 @@ export default function UserDataProvider({ children }) {
     link: "",
     points: 0,
     email: "",
-    Firstname:'',
-    Lastname:'',
+    Firstname: "",
+    Lastname: "",
+    activeInvestment: 0,
+    availableBalance: 0,
   });
   const [refList, setRefList] = useState([]);
-  const [amount, setAmount] = useState();
+
+  //this particular amount state is used here incase a person had made payment and mistakenly exit the deposit page, the payment will still continue
+  const [amount, setAmount] = useState(0);
 
   const [currentUser, setCurrentUser] = useState(
-    sessionStorage.getItem("kinnex-login")
+    sessionStorage.getItem("kinnex-login") ||
+      localStorage.getItem("kinnex-login")
   );
 
   // if useEffect is used, itll throw an error if the user isnt logged in. check mainpage componenent for more info
@@ -42,8 +47,10 @@ export default function UserDataProvider({ children }) {
               link: `kinnex-rho.vercel.app/registration/signup?ref=${userData.ReferralCode}`,
               points: userData.referralCount,
               email: userData.Email,
-              Firstname:userData.Firstname,
-              Lastname:userData.Lastname
+              Firstname: userData.Firstname,
+              Lastname: userData.Lastname,
+              activeInvestment: userData.activeInvestment,
+              availableBalance: userData.availableBalance,
             });
           }
         });
@@ -68,7 +75,11 @@ export default function UserDataProvider({ children }) {
   };
 
   //submit transaction to database after payment
-  const submitTransaction = (response) => {
+  const submitTransaction = (response, amount) => {
+    if (!currentUser) {
+      console.error("⚠️ No logged in user. Cannot submit transaction.");
+      return;
+    }
     const transactionRef = collection(db, "users", currentUser, "transaction");
     const date = new Date();
     addDoc(transactionRef, {
@@ -84,7 +95,7 @@ export default function UserDataProvider({ children }) {
         toast.success("transaction successful");
       })
       .catch((res) => {
-        console.log(res, 'transaction error');
+        console.log(res, "transaction error");
         toast.success("transaction error");
       });
   };

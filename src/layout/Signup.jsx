@@ -115,7 +115,8 @@ export default function Signup() {
                   ReferredBy: referrerCode,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
-                  
+                  activeInvestment: 0,
+                  availableBalance: 0,
                 });
               } else {
                 // Referral code not found, proceed without it
@@ -127,7 +128,8 @@ export default function Signup() {
                   ReferredBy: null,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
-                 
+                  activeInvestment: 0,
+                  availableBalance: 0,
                 });
               }
             })
@@ -152,7 +154,8 @@ export default function Signup() {
             ReferredBy: null,
             createdAt: serverTimestamp(),
             referralCount: 0,
-           
+            activeInvestment: 0,
+            availableBalance: 0,
           })
             .then(() => {
               toast.success("Account successfully created");
@@ -192,40 +195,40 @@ export default function Signup() {
   }
 
   return (
-    <div className='space-y-2 '>
+    <div className="space-y-2 ">
       <ToastContainer />
 
       {isloading && (
         <LoadingIndicator1 className={"top-75 ml-[39%] md:ml-[17%]"} />
       )}
 
-      <h1 className='font-bold text-2xl'> Create an account</h1>
+      <h1 className="font-bold text-2xl"> Create an account</h1>
       <p>Start your investment journey with Kinnex</p>
 
       <form>
-        <section className='grid grid-cols-2 space-x-2'>
-          <label htmlFor='First Name' className='font-bold'>
+        <section className="grid grid-cols-2 space-x-2">
+          <label htmlFor="First Name" className="font-bold">
             First Name
           </label>
 
-          <label htmlFor='First Name' className='font-bold'>
+          <label htmlFor="First Name" className="font-bold">
             Last Name
           </label>
 
           <Input
             value={userData.firstname}
-            className='p-3 bg-white rounded-lg'
-            placeholder='John'
+            className="p-3 bg-white rounded-lg"
+            placeholder="John"
             type={"text"}
             onChange={(e) => handleChange(e)}
-            name='firstname'
+            name="firstname"
             required={true}
           />
 
           <Input
             value={userData.lastname}
-            className='p-3 bg-white rounded-lg'
-            placeholder='Doe'
+            className="p-3 bg-white rounded-lg"
+            placeholder="Doe"
             type={"text"}
             onChange={(e) => handleChange(e)}
             name={"lastname"}
@@ -235,12 +238,12 @@ export default function Signup() {
           <br />
         </section>
 
-        <section className='grid space-y-1'>
-          <label htmlFor='Email font-bold'>Email</label>
+        <section className="grid space-y-1">
+          <label htmlFor="Email font-bold">Email</label>
           <Input
             value={userData.email}
-            className='p-3 bg-white rounded-lg'
-            placeholder='Doe'
+            className="p-3 bg-white rounded-lg"
+            placeholder="Doe"
             type={"text"}
             onChange={(e) => handleChange(e)}
             name={"email"}
@@ -255,23 +258,23 @@ export default function Signup() {
             showPassword={showpassword}
           />
 
-          <label htmlFor='password font-bold'>Password</label>
+          <label htmlFor="password font-bold">Password</label>
           <Input
             value={userData.password}
-            className='py-3 pl-3 pr-15 bg-white rounded-lg'
-            placeholder='Password'
+            className="py-3 pl-3 pr-15 bg-white rounded-lg"
+            placeholder="Password"
             type={!showpassword ? "password" : "text"}
             onChange={(e) => handleChange(e)}
             name={"password"}
             required={true}
           />
-          <p className='text-sm'>
+          <p className="text-sm">
             Password must be atleast 8 characters with a number and special
             character
           </p>
           <br />
 
-          <section className='space-x-2'>
+          <section className="space-x-2">
             <Input
               type={"checkbox"}
               onChange={() => setAgree(!agree)}
@@ -279,8 +282,8 @@ export default function Signup() {
             />
             <span>
               I agree to the{" "}
-              <Link className='text-blue-600'>Terms of Service</Link> and{" "}
-              <Link className='text-blue-600'>Privacy Policy</Link>
+              <Link className="text-blue-600">Terms of Service</Link> and{" "}
+              <Link className="text-blue-600">Privacy Policy</Link>
             </span>
           </section>
 

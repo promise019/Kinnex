@@ -12,40 +12,60 @@ const overview_details = [
 ];
 
 const plans = [
-  { plan: 1, amount: 3000, returns: 600, roi: 20, total:15000 },
-  { plan: 2, amount: 6000, returns: 1200, roi: 20, total:30000},
-  { plan: 3, amount: 10000, returns: 2000, roi: 20, total:50000 },
-  { plan: 4, amount: 15000, returns: 3000, roi: 20, total:75000 },
-  { plan: 5, amount: 25000, returns: 5000, roi: 20, total:125000 },
-  { plan: 6, amount: 50000, returns: 10000, roi: 20, total:200000 },
-  { plan: 7, amount: 100000, returns: 20000, roi: 20, total:250000 },
-  { plan: 8, amount: 200000, returns: 40000, roi: 20, total:1000000 },
+  { plan: 1, amount: 3000, returns: 600, roi: 20, total: 15000 },
+  { plan: 2, amount: 6000, returns: 1200, roi: 20, total: 30000 },
+  { plan: 3, amount: 10000, returns: 2000, roi: 20, total: 50000 },
+  { plan: 4, amount: 15000, returns: 3000, roi: 20, total: 75000 },
+  { plan: 5, amount: 25000, returns: 5000, roi: 20, total: 125000 },
+  { plan: 6, amount: 50000, returns: 10000, roi: 20, total: 200000 },
+  { plan: 7, amount: 100000, returns: 20000, roi: 20, total: 250000 },
+  { plan: 8, amount: 200000, returns: 40000, roi: 20, total: 1000000 },
   { plan: 9, amount: 400000, returns: 80000, roi: 20, total: 3000000 },
-  { plan: 10, amount: 600000, returns: 120000, roi: 20, total:5000000 },
+  { plan: 10, amount: 600000, returns: 120000, roi: 20, total: 5000000 },
   // { plan: 11, amount: 1000000, returns: 200000, roi: 20 },
 ];
 
 export default function Overview({}) {
-  const {referralData} = useContext(userDataContext)
+  const { referralData } = useContext(userDataContext);
 
   return (
     <div className="space-y-4">
       <h1 className="mt-12 mb-3">Overview </h1>
       <section className="grid grid-cols-2 space-y-5 space-x-2">
-        {overview_details.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20"
-          >
-            <span className="text-sm text-gray-600 font-bold">
-              {item.heading}
-            </span>
-            <h1 className="font-bold text-xl">
-              {index !== 1 ? <span>&#8358;</span> : " "}{" "}
-              {item.digit.toLocaleString()}
-            </h1>
-          </div>
-        ))}
+        <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
+          <span className="text-sm text-gray-600 font-bold">Total Earnings</span>
+          <h1 className="font-bold text-xl">
+            <span>&#8358;</span> {" "}
+             {referralData.points * 2000 + referralData.availableBalance}
+          </h1>
+        </div>
+
+        <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
+          <span className="text-sm text-gray-600 font-bold">
+            Active Ivestments
+          </span>
+          <h1 className="font-bold text-xl"> {" "}
+            {referralData.activeInvestment}</h1>
+        </div>
+
+        <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
+          <span className="text-sm text-gray-600 font-bold">
+            Available Balance
+          </span>
+          <h1 className="font-bold text-xl">
+            <span>&#8358;</span> {referralData.availableBalance}
+          </h1>
+        </div>
+
+        <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
+          <span className="text-sm text-gray-600 font-bold">
+            Referral Earnings
+          </span>
+          <h1 className="font-bold text-xl">
+            <span>&#8358;</span> {" "}
+             {(referralData.points * 2000).toLocaleString()}
+          </h1>
+        </div>
       </section>
 
       <section className="bg-blue-200 text-blue-800 w-full p-2 space-y-3 space-x-2">
@@ -104,8 +124,8 @@ export default function Overview({}) {
                 </tbody>
               </table>
               <PaystackButton
-               amount={item.amount}
-               email={referralData.email}
+                amount={item.amount}
+                email={referralData.email}
                 className={
                   "text-white bg-blue-800 rounded-lg w-full font-bold p-3 space-x-3"
                 }

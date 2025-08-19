@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 export default function AccountSetting() {
   const { referralData } = useContext(userDataContext);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <section className="rounded-tr-xl w-full bg-white shadow p-2 space-y-2">
       <div className="flex space-x-2.5">
@@ -17,9 +17,7 @@ export default function AccountSetting() {
           className="inline-block w-13 p-2 rounded-full bg-gray-400"
         />
         <span className="font-bold mt-3">
-          {referralData.Firstname}
-          {' '}
-          {referralData.Lastname}
+          {referralData.Firstname} {referralData.Lastname}
         </span>
       </div>
       <form className="space-y-4">
@@ -39,7 +37,12 @@ export default function AccountSetting() {
           className="p-2 shadow w-full lg:w-[98%]"
         />
         <Button
-          onClick={(e) => (localStorage.removeItem('kinnex-login'), navigate("/registration/login"))}
+          onClick={(e) => (
+            e.preventDefault(),
+            localStorage.removeItem("kinnex-login"),
+            sessionStorage.removeItem("kinnex-login"),
+            navigate("/registration/login")
+          )}
           className="bg-blue-600 text-white p-2 rounded-lg font-bold md:hidden"
         >
           Logout
