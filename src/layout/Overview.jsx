@@ -2,7 +2,7 @@ import timer from "../assets/icon/Frame (9).svg";
 import invest from "../assets/icon/Invest.svg";
 import PaystackButton from "../component/PaystackButton";
 import { userDataContext } from "../context/UserDataContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 const overview_details = [
   { heading: "Total Earings", digit: 389999 },
@@ -22,21 +22,35 @@ const plans = [
   { plan: 8, amount: 200000, returns: 40000, roi: 20, total: 1000000 },
   { plan: 9, amount: 400000, returns: 80000, roi: 20, total: 3000000 },
   { plan: 10, amount: 600000, returns: 120000, roi: 20, total: 5000000 },
-  // { plan: 11, amount: 1000000, returns: 200000, roi: 20 },
 ];
 
 export default function Overview({}) {
   const { referralData } = useContext(userDataContext);
+  const percentage =
+    referralData.availableBalance <= 15000
+      ? 1
+      : referralData.availableBalance > 15000 ||
+        referralData.availableBalance <= 100000
+      ? 3
+      : 25;
+
+
+  useEffect(()=>{
+    console.log(percentage)
+  })
 
   return (
     <div className="space-y-4">
       <h1 className="mt-12 mb-3">Overview </h1>
       <section className="grid grid-cols-2 space-y-5 space-x-2">
         <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
-          <span className="text-sm text-gray-600 font-bold">Total Earnings</span>
+          <span className="text-sm text-gray-600 font-bold">
+            Total Earnings
+          </span>
           <h1 className="font-bold text-xl">
-            <span>&#8358;</span> {" "}
-             {referralData.points * 2000 + referralData.availableBalance}
+            <span>&#8358;</span>{" "}
+            {((referralData.availableBalance * percentage) / 100) *
+              referralData.points + referralData.availableBalance}
           </h1>
         </div>
 
@@ -44,8 +58,10 @@ export default function Overview({}) {
           <span className="text-sm text-gray-600 font-bold">
             Active Ivestments
           </span>
-          <h1 className="font-bold text-xl"> {" "}
-            {referralData.activeInvestment}</h1>
+          <h1 className="font-bold text-xl">
+            {" "}
+            {referralData.activeInvestment}
+          </h1>
         </div>
 
         <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
@@ -62,8 +78,11 @@ export default function Overview({}) {
             Referral Earnings
           </span>
           <h1 className="font-bold text-xl">
-            <span>&#8358;</span> {" "}
-             {(referralData.points * 2000).toLocaleString()}
+            <span>&#8358;</span>{" "}
+            {(
+              ((referralData.availableBalance * percentage) / 100) *
+              referralData.points
+            ).toLocaleString()}
           </h1>
         </div>
       </section>
