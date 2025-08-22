@@ -17,7 +17,7 @@ export default function PaystackButton({
       amount: amount * 100,
       currency: "NGN",
       callback: function (response) {
-        console.log("✅ Paystack callback received:", response);
+        console.log("Paystack callback received:", response);
         if (typeof submitTransaction === "function") {
           submitTransaction(response, amount);
         }

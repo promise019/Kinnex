@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import timer from "../assets/icon/Frame (9).svg";
 import invest from "../assets/icon/Invest.svg";
 import PaystackButton from "../component/PaystackButton";
@@ -41,6 +42,7 @@ export default function Overview({}) {
 
   return (
     <div className="space-y-4">
+      <ToastContainer/>
       <h1 className="mt-12 mb-3">Overview </h1>
       <section className="grid grid-cols-2 space-y-5 space-x-2">
         <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
