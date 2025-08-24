@@ -27,6 +27,7 @@ const plans = [
 
 export default function Overview({}) {
   const { referralData } = useContext(userDataContext);
+  //Referral profit is earned based on percentage of investment
   const percentage =
     referralData.availableBalance <= 15000
       ? 1
