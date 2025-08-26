@@ -113,7 +113,7 @@ export default function UserDataProvider({ children }) {
 
       // 2. Increment activeBalance
       await updateDoc(userRef, {
-        activeBalance: increment(amount),
+        availableBalance: increment(amount),
         activeInvestment: increment(1)
       });
 
