@@ -13,7 +13,7 @@ const overview_details = [
 ];
 
 const plans = [
-  { plan: 1, amount: 3000, returns: 600, roi: 20, total: 15000 },
+  { plan: 1, amount: 100, returns: 600, roi: 20, total: 15000 },
   { plan: 2, amount: 6000, returns: 1200, roi: 20, total: 30000 },
   { plan: 3, amount: 10000, returns: 2000, roi: 20, total: 50000 },
   { plan: 4, amount: 15000, returns: 3000, roi: 20, total: 75000 },

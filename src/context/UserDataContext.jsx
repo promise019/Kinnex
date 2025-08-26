@@ -53,7 +53,7 @@ export default function UserDataProvider({ children }) {
           Firstname: userData.Firstname,
           Lastname: userData.Lastname,
           activeInvestment: userData.activeInvestment,
-          availableBalance: userData.activeBalance,
+          availableBalance: userData.availableBalance,
         });
       }
     });
