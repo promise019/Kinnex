@@ -108,6 +108,7 @@ export default function UserDataProvider({ children }) {
           second: "2-digit",
         }),
         amount: amount,
+        type:'deposit'
       });
 
       // 2. Increment activeBalance

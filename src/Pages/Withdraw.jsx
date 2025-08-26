@@ -8,7 +8,7 @@ import crypto from "../assets/icon/Frame (15) (1).svg";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { userDataContext } from "../context/UserDataContext";
-import { addDoc, doc, increment, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import emailjs from "emailjs-com";
@@ -94,6 +94,13 @@ export default function Withdraw() {
     try {
       setErrors({});
       const detailsRef = doc(db, "users", currentUser);
+      const transactionRef = collection(
+        db,
+        "users",
+        currentUser,
+        "transaction"
+      );
+
       await setDoc(
         detailsRef,
         { bankDetails: withdrawalData },
@@ -101,6 +108,24 @@ export default function Withdraw() {
       );
       await updateDoc(detailsRef, {
         activeBalance: increment(-withdrawalData.amount),
+      });
+
+      const date = new Date();
+
+      // 1. Add transaction record
+      await addDoc(transactionRef, {
+        date: date.toLocaleDateString("default", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        time: date.toLocaleTimeString("default", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+        amount: withdrawalData.amount,
+        type:'withdraw'
       });
 
       // email services
@@ -197,7 +222,7 @@ export default function Withdraw() {
             className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold lg:w-fit"
             onClick={() => submitBankDetails()}
           >
-            Submit Bank Details
+            Withdraw
           </Button>
         </section>
 

@@ -84,15 +84,17 @@ export default function Notification() {
                   </tr>
                   <tr>
                     <td className="p-2">Amount:</td>
-                    <td className="text-right p-2 font-bold">
+                    <td
+                      className={`text-right p-2 font-bold ${
+                        tx.type === "withdraw" ? "text-red-400" : "text-green-400"
+                      }`}
+                    >
                       &#8358;{tx.amount}
                     </td>
                   </tr>
                   <tr>
                     <td className="p-2">Date:</td>
-                    <td className="text-right p-2 font-bold text-green-400">
-                      {tx.date}
-                    </td>
+                    <td className="text-right p-2 font-bold">{tx.date}</td>
                   </tr>
                   <tr>
                     <td className="p-2">Time</td>
