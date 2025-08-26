@@ -282,8 +282,8 @@ export default function Signup() {
             />
             <span>
               I agree to the{" "}
-              <Link className="text-blue-600">Terms of Service</Link> and{" "}
-              <Link className="text-blue-600">Privacy Policy</Link>
+              <Link to={'/registration/terms'} className="text-blue-600">Terms of Service</Link> and{" "}
+              <Link to={'/registration/terms'} className="text-blue-600">Privacy Policy</Link>
             </span>
           </section>
 

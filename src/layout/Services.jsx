@@ -30,9 +30,9 @@ const services = [
   },
 ];
 
-export default function Services() {
+export default function Services({ref}) {
   return (
-    <div
+    <div ref={ref}
       id='services'
       className='text-center p-4 bg-gray-100 space-y-6 lg:px-7'
     >

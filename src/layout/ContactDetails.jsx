@@ -6,9 +6,9 @@ import location from "../assets/icon/Frame (3).svg";
 import call from "../assets/icon/Frame (5).svg";
 import mail from "../assets/icon/Frame (4).svg";
 
-export default function LandingPageFooter() {
+export default function LandingPageFooter({ref}) {
   return (
-    <footer className='bg-gray-950 text-white grid grid-cols-2 p-6 space-y-6'>
+    <footer id="contact" className='bg-gray-950 text-white grid grid-cols-2 p-6 space-y-6' ref={ref}>
       <section className='space-x-3'>
         <h1 className='font-bold text-lg'>Kinnex Ltd</h1>
         <br />
@@ -53,10 +53,10 @@ export default function LandingPageFooter() {
         <h2 className='inline-block'>123 Finance Street, New York, NY 10001</h2>
         <br />
         <img src={call} className='inline-block' />
-        <h2 className='inline-block'>+234 916 795 0558</h2>
+        <h2 className='inline-block'>+1 (365) 740-0656</h2>
         <br />
         <img src={mail} className='inline-block' />
-        <h2 className='inline-block'>support@kinnex.com</h2>
+        <h2 className='inline-block'>kinnexsupprt@gmail.com</h2>
       </section>
     </footer>
   );

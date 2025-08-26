@@ -6,10 +6,10 @@ import stair from "../assets/icon/Frame (7).svg";
 import shield from "../assets/icon/Vector.svg";
 import { useNavigate } from "react-router";
 
-export default function Home() {
+export default function Home({ref}) {
   const navigate = useNavigate();
   return (
-    <div
+    <div ref={ref}
       id="home"
       className="bg-gradient-to-r from-blue-900 to-blue-700 text-white px-3 py-17 space-y-4 
       md:flex md:px-10 md:space-x-6 lg:px-15 xl:px-38"
@@ -32,7 +32,7 @@ export default function Home() {
           <img src={forward} className="w-5 inline-block" />
         </Button>
 
-        <Button className="text-white p-4">Schedule Consultation</Button>
+        {/* <Button className="text-white p-4">Schedule Consultation</Button> */}
       </section>
 
       <section className="px-7 py-7 space-y-5 rounded-2xl bg-blue-900 shadow-2xl shadow-blue-950 md:max-h-fit">

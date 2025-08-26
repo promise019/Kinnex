@@ -15,6 +15,7 @@ import Settings from "./Pages/Settings";
 import Notification from "./Pages/Notification";
 import AccountSetting from "./layout/AccountSettings";
 import PasswordSettings from "./layout/PasswordSettings";
+import TermsOfService$privacyPolicy from "./layout/TermsOfService";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path='/registration' element={<Registration />}>
           <Route path='login' element={<Login />} />
           <Route path='signup' element={<Signup />} />
+          <Route path="terms" element={<TermsOfService$privacyPolicy/>}/>
         </Route>
         <Route path='/home' element={<Mainpage />}>
           <Route path='dashboard' element={<Dashboard />} />

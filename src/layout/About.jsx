@@ -8,11 +8,11 @@ const about = [
   "Transparent fee structure with no hidden costs",
   "Regular portfolio reviews and adjustments",
 ];
-export default function About() {
+export default function About({ref}) {
   return (
     <div id='about' className='bg-white p-5  space-y-4 lg:px-8'>
       <img src={image} className='md:w-full' />
-      <h1 className='font-bold text-2xl'>About Kinnex Ltd</h1>
+      <h1 className='font-bold text-2xl' ref={ref}>About Kinnex Ltd</h1>
       <p>
         Founded in 2008, Kinnex Ltd has established itself as a trusted partner
         in wealth management and investment services. Our mission is to help our

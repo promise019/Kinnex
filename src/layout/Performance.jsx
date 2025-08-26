@@ -5,9 +5,9 @@ const performance = [
   { heading: "2,500+", detail: "Satisfied Clients" },
 ];
 
-export default function Performance() {
+export default function Performance({ref}) {
   return (
-    <div className='text-center bg-blue-950 text-white px-5 py-10 space-y-5 lg:py-15'>
+    <div ref={ref} className='text-center bg-blue-950 text-white px-5 py-10 space-y-5 lg:py-15'>
       <h1 className='text-2xl font-bold'>Our Performance</h1>
       <p>
         We take pride in our track record of delivering consistent results for

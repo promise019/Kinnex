@@ -60,13 +60,16 @@ export default function Notification() {
             Click on the links below to join our channels;
           </h1>
           <a
-            href="https://whatsapp.com/channel/0029Vb6ljpS17EmymUhLl61z"
+            href="https://bit.ly/4fZzBy6"
             className="font-bold"
           >
             Whatsapp
           </a>
           <a href="https://t.me/kinnexglobal1937" className="font-bold">
             Telegram
+          </a>
+          <a href="https://wa.me/+13657400656" className="font-bold">
+            Customer Support
           </a>
         </div>
       </section>
