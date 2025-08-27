@@ -29,13 +29,13 @@ export default function UserDataProvider({ children }) {
     activeInvestment: 0,
     investmentBalance: 0,
     depositBalance: 0,
-    bankDetails:{}
+    bankDetails: {},
   });
   const [refList, setRefList] = useState([]);
 
   //this particular amount state is used here incase a person had made payment and mistakenly exit the deposit page, the payment will still continue
   const [amount, setAmount] = useState(0);
-  const [investmentdate, setInvestmentdate] = useState(null || undefined)
+  const [investmentdate, setInvestmentdate] = useState(null || undefined);
 
   const [currentUser, setCurrentUser] = useState(
     sessionStorage.getItem("kinnex-login") ||
@@ -59,10 +59,10 @@ export default function UserDataProvider({ children }) {
           activeInvestment: userData.activeInvestment,
           investmentBalance: userData.investmentBalance,
           depositBalance: userData.depositBalance,
-          bankDetails: userData?.bankDetails
+          bankDetails: userData?.bankDetails,
         });
 
-        setInvestmentdate(userData?.investmentdate.toDate())
+        setInvestmentdate(userData?.investmentdate?.toDate() || null);
       }
     });
 
@@ -125,15 +125,16 @@ export default function UserDataProvider({ children }) {
           investmentBalance: increment(amount),
           activeInvestment: increment(1),
         });
+
+        // only set investmentdate on first-ever investment
+        if (!investmentdate) {
+          await updateDoc(userRef, {
+            investmentdate: serverTimestamp(),
+          });
+        }
       } else {
         await updateDoc(userRef, {
           depositBalance: increment(amount),
-        });
-      }
-
-      if (investmentdate === null || undefined && type === 'invest') {
-        await updateDoc(userRef, {
-          investmentdate: serverTimestamp(),
         });
       }
 

@@ -49,7 +49,6 @@ export default function Withdraw() {
       localStorage.getItem("kinnex-login")
   );
 
-
   const { referralData, investmentdate } = useContext(userDataContext);
 
   const [withdrawalData, setWithdrawalData] = useState({
@@ -79,13 +78,19 @@ export default function Withdraw() {
   const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
   const points = referralData.points === 0 ? 1 : referralData.points;
 
-  const total =
-    (referralData.investmentBalance * percent) / 100 +
-    referralData.depositBalance;
+  const calculatedEarnings = (referralData.investmentBalance * percent) / 100;
+
+  const totalAvailable =
+    referralData.depositBalance +
+    referralData.investmentBalance +
+    calculatedEarnings;
 
   const submitBankDetails = async () => {
     const newErrors = {};
-    if (withdrawalData.amount < 1000 || withdrawalData.amount > total) {
+    if (
+      Number(withdrawalData.amount) < 100 ||
+      withdrawalData.amount > totalAvailable
+    ) {
       newErrors.amount = true;
     }
     if (withdrawalData.accountNo.length !== 10) {
@@ -119,9 +124,41 @@ export default function Withdraw() {
         { bankDetails: withdrawalData },
         { merge: true }
       );
-      await updateDoc(detailsRef, {
-        activeBalance: increment(-withdrawalData.amount),
-      });
+
+      
+
+      // Deduct from depositBalance first
+      if (withdrawalData.amount >= referralData.depositBalance) {
+        const depositDeduction = referralData.depositBalance;
+        withdrawalData.amount -= depositDeduction;
+
+        await updateDoc(detailsRef, {
+          depositBalance: increment(-depositDeduction),
+        });
+      } else {
+        const depositDeduction = withdrawalData.amount;
+        withdrawalData.amount = 0;
+
+        await updateDoc(detailsRef, {
+          depositBalance: increment(-depositDeduction),
+        });
+      }
+
+      // If there's still a remaining amount, account for calculated earnings
+      if (withdrawalData.amount > 0) {
+        if (withdrawalData.amount >= calculatedEarnings) {
+          withdrawalData.amount -= calculatedEarnings;
+        } else {
+          withdrawalData.amount = 0;
+        }
+      }
+
+      // If there's still a remaining amount, deduct from investmentBalance
+      if (withdrawalData.amount > 0) {
+        await updateDoc(detailsRef, {
+          investmentBalance: increment(-withdrawalData.amount),
+        });
+      }
 
       const date = new Date();
 
@@ -173,7 +210,7 @@ export default function Withdraw() {
             <span>Available Balance:</span>
             <span className="text-black font-bold text-lg">
               &#8358;
-              {total}
+              {totalAvailable}
             </span>
           </p>
         </section>

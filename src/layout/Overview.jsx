@@ -71,7 +71,7 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(referralData.investmentBalance * percent) / 100 +
-              referralData.depositBalance}
+              referralData.depositBalance + referralData.investmentBalance}
           </h1>
         </div>
 
