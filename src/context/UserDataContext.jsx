@@ -86,7 +86,7 @@ export default function UserDataProvider({ children }) {
   };
 
   //submit transaction to database after payment
-  const submitTransaction = async (response, amount, type) => {
+  const submitTransaction = async (response, amount) => {
     if (!currentUser) {
       console.error("⚠️ No logged in user. Cannot submit transaction.");
       return;
@@ -118,25 +118,11 @@ export default function UserDataProvider({ children }) {
         amount: amount,
         type: "deposit",
       });
-
-      // 2. Increment activeBalance
-      if (type === "invest") {
-        await updateDoc(userRef, {
-          investmentBalance: increment(amount),
-          activeInvestment: increment(1),
-        });
-
-        // only set investmentdate on first-ever investment
-        if (!investmentdate) {
-          await updateDoc(userRef, {
-            investmentdate: serverTimestamp(),
-          });
-        }
-      } else {
+      
         await updateDoc(userRef, {
           depositBalance: increment(amount),
         });
-      }
+  
 
       console.log(response);
       toast.success("Transaction successful");

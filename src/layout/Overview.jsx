@@ -1,9 +1,19 @@
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import timer from "../assets/icon/Frame (9).svg";
 import invest from "../assets/icon/Invest.svg";
 import PaystackButton from "../component/PaystackButton";
 import { userDataContext } from "../context/UserDataContext";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import Button from "../component/Button";
+import {
+  addDoc,
+  collection,
+  doc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 const overview_details = [
   { heading: "Total Earings", digit: 389999 },
@@ -27,6 +37,11 @@ const plans = [
 
 export default function Overview({}) {
   const { referralData, investmentdate } = useContext(userDataContext);
+  const [isloading, setIsloading] = useState(false);
+  const currentUser =
+    sessionStorage.getItem("kinnex-login") ||
+    localStorage.getItem("kinnex-login");
+
   const today = new Date();
 
   const msPerDay = 1000 * 60 * 60 * 24;
@@ -37,7 +52,61 @@ export default function Overview({}) {
 
   // If referral → fixed 25%, else use dateError
   const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
-  const points = referralData.points === 0 ? 1 : referralData.points;
+  const points = referralData.points;
+
+  const Invest = async (e) => {
+    if (referralData.depositBalance < e) {
+      toast.error("insufficient balance");
+      return;
+    }
+
+    try {
+      setIsloading(true);
+      const userRef = doc(db, "users", currentUser);
+      const transactionRef = collection(
+        db,
+        "users",
+        currentUser,
+        "transaction"
+      );
+      if (!investmentdate) {
+        await updateDoc(userRef, {
+          investmentdate: serverTimestamp(),
+        });
+      }
+      await updateDoc(userRef, {
+        investmentBalance: increment(e),
+        activeInvestment: increment(1),
+        depositBalance: increment(-e),
+      });
+
+      const date = new Date();
+
+      // 1. Add transaction record
+      await addDoc(transactionRef, {
+        date: date.toLocaleDateString("default", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        time: date.toLocaleTimeString("default", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+        amount: e,
+        type: "invest",
+      });
+
+      setIsloading(false);
+
+      toast.success("Investment successful");
+    } catch (error) {
+      console.log(error);
+      setIsloading(false);
+      toast.error("Error");
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -50,7 +119,7 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {((referralData.investmentBalance * percent) / 100) * points}
+            {((referralData.investmentBalance * percent) / 100) * (points +1)}
           </h1>
         </div>
 
@@ -70,8 +139,9 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {(referralData.investmentBalance * percent) / 100 +
-              referralData.depositBalance + referralData.investmentBalance}
+            {((referralData.investmentBalance * percent) / 100 +
+              referralData.depositBalance +
+              referralData.investmentBalance).toLocaleString()}
           </h1>
         </div>
 
@@ -144,17 +214,22 @@ export default function Overview({}) {
                   </tr>
                 </tbody>
               </table>
-              <PaystackButton
-                amount={item.amount}
-                email={referralData.email}
-                type="invest"
+              <Button
+                onClick={() => Invest(item.amount)}
+                disabled={isloading}
                 className={
-                  "text-white bg-blue-800 rounded-lg w-full font-bold p-3 space-x-3"
+                  "text-white bg-blue-800 rounded-lg w-full font-bold p-3 space-x-3 disabled:bg-blue-400"
                 }
               >
-                <img src={invest} className="w-7 inline-block" />
-                <span>Invest Now</span>
-              </PaystackButton>
+                {isloading ? (
+                  <span>Wait...</span>
+                ) : (
+                  <>
+                    <img src={invest} className="w-7 inline-block" />
+                    <span>Invest Now</span>
+                  </>
+                )}
+              </Button>
             </div>
           ))}
         </div>

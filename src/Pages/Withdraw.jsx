@@ -80,10 +80,7 @@ export default function Withdraw() {
 
   const calculatedEarnings = (referralData.investmentBalance * percent) / 100;
 
-  const totalAvailable =
-    referralData.depositBalance +
-    referralData.investmentBalance +
-    calculatedEarnings;
+  const totalAvailable = referralData.depositBalance + calculatedEarnings;
 
   const submitBankDetails = async () => {
     const newErrors = {};
@@ -124,8 +121,6 @@ export default function Withdraw() {
         { bankDetails: withdrawalData },
         { merge: true }
       );
-
-      
 
       // Deduct from depositBalance first
       if (withdrawalData.amount >= referralData.depositBalance) {

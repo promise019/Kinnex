@@ -20,7 +20,7 @@ export default function PaystackButton({
       callback: function (response) {
         console.log("Paystack callback received:", response);
         if (typeof submitTransaction === "function") {
-          submitTransaction(response, amount, type);
+          submitTransaction(response, amount);
         }
       },
       onClose,
