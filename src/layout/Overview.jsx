@@ -127,7 +127,7 @@ export default function Overview({}) {
 
         <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
           <span className="text-sm text-gray-600 font-bold">
-            Active Ivestments
+            Active Investments
           </span>
           <h1 className="font-bold text-xl">
             {" "}
