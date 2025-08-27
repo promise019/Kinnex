@@ -115,8 +115,9 @@ export default function Signup() {
                   ReferredBy: referrerCode,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
+                  depositBalance: 0,
+                  investmentBalance: 0,
                   activeInvestment: 0,
-                  availableBalance: 0,
                 });
               } else {
                 // Referral code not found, proceed without it
@@ -128,8 +129,9 @@ export default function Signup() {
                   ReferredBy: null,
                   createdAt: serverTimestamp(),
                   referralCount: 0,
+                  depositBalance: 0,
+                  investmentBalance: 0,
                   activeInvestment: 0,
-                  availableBalance: 0,
                 });
               }
             })
@@ -154,8 +156,9 @@ export default function Signup() {
             ReferredBy: null,
             createdAt: serverTimestamp(),
             referralCount: 0,
+            depositBalance: 0,
+            investmentBalance: 0,
             activeInvestment: 0,
-            availableBalance: 0,
           })
             .then(() => {
               toast.success("Account successfully created");
@@ -282,8 +285,13 @@ export default function Signup() {
             />
             <span>
               I agree to the{" "}
-              <Link to={'/registration/terms'} className="text-blue-600">Terms of Service</Link> and{" "}
-              <Link to={'/registration/terms'} className="text-blue-600">Privacy Policy</Link>
+              <Link to={"/registration/terms"} className="text-blue-600">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link to={"/registration/terms"} className="text-blue-600">
+                Privacy Policy
+              </Link>
             </span>
           </section>
 

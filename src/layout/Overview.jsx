@@ -26,24 +26,22 @@ const plans = [
 ];
 
 export default function Overview({}) {
-  const { referralData } = useContext(userDataContext);
-  //Referral profit is earned based on percentage of investment
-  const percentage =
-    referralData.availableBalance <= 15000
-      ? 1
-      : referralData.availableBalance > 15000 ||
-        referralData.availableBalance <= 100000
-      ? 3
-      : 25;
+  const { referralData, investmentdate } = useContext(userDataContext);
+  const today = new Date();
 
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysSince = Math.floor((today - investmentdate) / msPerDay);
 
-  useEffect(()=>{
-    console.log(percentage)
-  })
+  const hasReferral = referralData.points >= 1;
+  const dateError = daysSince === 0 ? 20 : 20 * (daysSince + 1);
+
+  // If referral → fixed 25%, else use dateError
+  const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
+  const points = referralData.points === 0 ? 1 : referralData.points;
 
   return (
     <div className="space-y-4">
-      <ToastContainer/>
+      <ToastContainer />
       <h1 className="mt-12 mb-3">Overview </h1>
       <section className="grid grid-cols-2 space-y-5 space-x-2">
         <div className="bg-white p-3 space-y-4 border-l-5 border-blue-700 rounded-xl h-20">
@@ -52,8 +50,7 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {((referralData.availableBalance * percentage) / 100) *
-              referralData.points + referralData.availableBalance}
+            {((referralData.investmentBalance * percent) / 100) * points}
           </h1>
         </div>
 
@@ -72,7 +69,9 @@ export default function Overview({}) {
             Available Balance
           </span>
           <h1 className="font-bold text-xl">
-            <span>&#8358;</span> {referralData.availableBalance}
+            <span>&#8358;</span>{" "}
+            {(referralData.investmentBalance * percent) / 100 +
+              referralData.depositBalance}
           </h1>
         </div>
 
@@ -83,8 +82,8 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(
-              ((referralData.availableBalance * percentage) / 100) *
-              referralData.points
+              ((referralData.investmentBalance * percent) / 100) *
+              points
             ).toLocaleString()}
           </h1>
         </div>
@@ -148,6 +147,7 @@ export default function Overview({}) {
               <PaystackButton
                 amount={item.amount}
                 email={referralData.email}
+                type="invest"
                 className={
                   "text-white bg-blue-800 rounded-lg w-full font-bold p-3 space-x-3"
                 }

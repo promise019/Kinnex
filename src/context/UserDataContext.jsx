@@ -10,6 +10,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -26,12 +27,15 @@ export default function UserDataProvider({ children }) {
     Firstname: "",
     Lastname: "",
     activeInvestment: 0,
-    availableBalance: 0,
+    investmentBalance: 0,
+    depositBalance: 0,
+    bankDetails:{}
   });
   const [refList, setRefList] = useState([]);
 
   //this particular amount state is used here incase a person had made payment and mistakenly exit the deposit page, the payment will still continue
   const [amount, setAmount] = useState(0);
+  const [investmentdate, setInvestmentdate] = useState(null || undefined)
 
   const [currentUser, setCurrentUser] = useState(
     sessionStorage.getItem("kinnex-login") ||
@@ -40,7 +44,7 @@ export default function UserDataProvider({ children }) {
 
   const getUserData = () => {
     if (!currentUser) return;
-  
+
     // 🔹 Real-time listener on user document
     const userDocRef = doc(db, "users", currentUser);
     const unsubscribeUser = onSnapshot(userDocRef, (docsnap) => {
@@ -53,11 +57,15 @@ export default function UserDataProvider({ children }) {
           Firstname: userData.Firstname,
           Lastname: userData.Lastname,
           activeInvestment: userData.activeInvestment,
-          availableBalance: userData.availableBalance,
+          investmentBalance: userData.investmentBalance,
+          depositBalance: userData.depositBalance,
+          bankDetails: userData?.bankDetails
         });
+
+        setInvestmentdate(userData?.investmentdate.toDate())
       }
     });
-  
+
     // 🔹 Real-time listener on referral collection
     const referralRef = collection(db, "users", currentUser, "refs");
     const q = query(referralRef, orderBy("date"));
@@ -69,7 +77,7 @@ export default function UserDataProvider({ children }) {
       }));
       setRefList(refs);
     });
-  
+
     // 🔹 Return a cleanup function that unsubscribes both
     return () => {
       unsubscribeUser();
@@ -78,7 +86,7 @@ export default function UserDataProvider({ children }) {
   };
 
   //submit transaction to database after payment
-  const submitTransaction = async (response, amount) => {
+  const submitTransaction = async (response, amount, type) => {
     if (!currentUser) {
       console.error("⚠️ No logged in user. Cannot submit transaction.");
       return;
@@ -108,14 +116,26 @@ export default function UserDataProvider({ children }) {
           second: "2-digit",
         }),
         amount: amount,
-        type:'deposit'
+        type: "deposit",
       });
 
       // 2. Increment activeBalance
-      await updateDoc(userRef, {
-        availableBalance: increment(amount),
-        activeInvestment: increment(1)
-      });
+      if (type === "invest") {
+        await updateDoc(userRef, {
+          investmentBalance: increment(amount),
+          activeInvestment: increment(1),
+        });
+      } else {
+        await updateDoc(userRef, {
+          depositBalance: increment(amount),
+        });
+      }
+
+      if (investmentdate === null || undefined && type === 'invest') {
+        await updateDoc(userRef, {
+          investmentdate: serverTimestamp(),
+        });
+      }
 
       console.log(response);
       toast.success("Transaction successful");
@@ -124,7 +144,7 @@ export default function UserDataProvider({ children }) {
       toast.error("Transaction failed");
     }
   };
-  
+
   return (
     <userDataContext.Provider
       value={{
@@ -133,6 +153,7 @@ export default function UserDataProvider({ children }) {
         getUserData,
         setCurrentUser,
         submitTransaction,
+        investmentdate,
         amount,
         setAmount,
       }}

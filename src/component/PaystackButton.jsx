@@ -7,6 +7,7 @@ export default function PaystackButton({
   onClose,
   children,
   className,
+  type
 }) {
   const { submitTransaction } = useContext(userDataContext);
 
@@ -19,7 +20,7 @@ export default function PaystackButton({
       callback: function (response) {
         console.log("Paystack callback received:", response);
         if (typeof submitTransaction === "function") {
-          submitTransaction(response, amount);
+          submitTransaction(response, amount, type);
         }
       },
       onClose,

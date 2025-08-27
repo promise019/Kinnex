@@ -8,7 +8,14 @@ import crypto from "../assets/icon/Frame (15) (1).svg";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { userDataContext } from "../context/UserDataContext";
-import { addDoc, collection, doc, increment, setDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  increment,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import emailjs from "emailjs-com";
@@ -41,11 +48,15 @@ export default function Withdraw() {
     sessionStorage.getItem("kinnex-login") ||
       localStorage.getItem("kinnex-login")
   );
+
+
+  const { referralData, investmentdate } = useContext(userDataContext);
+
   const [withdrawalData, setWithdrawalData] = useState({
     amount: "",
-    accountNo: "",
-    bank: "",
-    name: "",
+    accountNo: referralData?.bankDetails?.accountNo,
+    bank: referralData?.bankDetails?.bank,
+    name: referralData?.bankDetails?.name,
     userId: currentUser,
   });
 
@@ -56,19 +67,21 @@ export default function Withdraw() {
     setWithdrawalData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { referralData } = useContext(userDataContext);
+  const today = new Date();
 
-  const percentage =
-    referralData.availableBalance <= 15000
-      ? 1
-      : referralData.availableBalance > 15000 ||
-        referralData.availableBalance <= 100000
-      ? 3
-      : 25;
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysSince = Math.floor((today - investmentdate) / msPerDay);
+
+  const hasReferral = referralData.points >= 1;
+  const dateError = daysSince === 0 ? 20 : 20 * (daysSince + 1);
+
+  // If referral → fixed 25%, else use dateError
+  const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
+  const points = referralData.points === 0 ? 1 : referralData.points;
 
   const total =
-    ((referralData.availableBalance * percentage) / 100) * referralData.points +
-    referralData.availableBalance;
+    (referralData.investmentBalance * percent) / 100 +
+    referralData.depositBalance;
 
   const submitBankDetails = async () => {
     const newErrors = {};
@@ -125,7 +138,7 @@ export default function Withdraw() {
           second: "2-digit",
         }),
         amount: withdrawalData.amount,
-        type:'withdraw'
+        type: "withdraw",
       });
 
       // email services
@@ -217,6 +230,8 @@ export default function Withdraw() {
             }`}
             placeholder="Bank Username"
           />
+
+          <br className="hidden xl:block" />
 
           <Button
             className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold lg:w-fit"
