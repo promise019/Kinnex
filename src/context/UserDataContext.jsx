@@ -51,7 +51,7 @@ export default function UserDataProvider({ children }) {
       if (docsnap.exists()) {
         const userData = docsnap.data();
         setReferralData({
-          link: `kinnex.com.ng/registration/signup?ref=${userData.ReferralCode}`,
+          link: `kinnexx.com.ng/registration/signup?ref=${userData.ReferralCode}`,
           points: userData.referralCount,
           email: userData.Email,
           Firstname: userData.Firstname,
