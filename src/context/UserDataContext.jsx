@@ -51,7 +51,7 @@ export default function UserDataProvider({ children }) {
       if (docsnap.exists()) {
         const userData = docsnap.data();
         setReferralData({
-          link: `kinnex-rho.vercel.app/registration/signup?ref=${userData.ReferralCode}`,
+          link: `kinnex.com.ng/registration/signup?ref=${userData.ReferralCode}`,
           points: userData.referralCount,
           email: userData.Email,
           Firstname: userData.Firstname,

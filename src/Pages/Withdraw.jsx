@@ -77,8 +77,9 @@ export default function Withdraw() {
   // If referral → fixed 25%, else use dateError
   const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
   const points = referralData.points === 0 ? 1 : referralData.points;
+  const earningPoint = points === 0 ? 1 : points
 
-  const calculatedEarnings = (referralData.investmentBalance * percent) / 100;
+  const calculatedEarnings = (referralData.investmentBalance * percent) / 100 * earningPoint;
 
   const totalAvailable = referralData.depositBalance + calculatedEarnings;
 

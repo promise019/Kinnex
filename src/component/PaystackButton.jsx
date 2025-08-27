@@ -30,7 +30,7 @@ export default function PaystackButton({
   };
   return (
     <button
-      onClick={amount < 100 ? null : payWithPaystack}
+      onClick={amount < 3000 ? null : payWithPaystack}
       className={className}
     >
       {children}

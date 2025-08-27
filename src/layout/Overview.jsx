@@ -23,7 +23,7 @@ const overview_details = [
 ];
 
 const plans = [
-  { plan: 1, amount: 100, returns: 600, roi: 20, total: 15000 },
+  { plan: 1, amount: 3000, returns: 600, roi: 20, total: 15000 },
   { plan: 2, amount: 6000, returns: 1200, roi: 20, total: 30000 },
   { plan: 3, amount: 10000, returns: 2000, roi: 20, total: 50000 },
   { plan: 4, amount: 15000, returns: 3000, roi: 20, total: 75000 },
@@ -53,6 +53,8 @@ export default function Overview({}) {
   // If referral → fixed 25%, else use dateError
   const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
   const points = referralData.points;
+
+  const earningPoint = points === 0 ? 1 : points
 
   const Invest = async (e) => {
     if (referralData.depositBalance < e) {
@@ -119,7 +121,7 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {((referralData.investmentBalance * percent) / 100) * (points +1)}
+            {(((referralData.investmentBalance * percent) / 100) * earningPoint).toLocaleString()}
           </h1>
         </div>
 
@@ -139,9 +141,11 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {((referralData.investmentBalance * percent) / 100 +
+            {(
+              (referralData.investmentBalance * percent) / 100 +
               referralData.depositBalance +
-              referralData.investmentBalance).toLocaleString()}
+              referralData.investmentBalance
+            ).toLocaleString()}
           </h1>
         </div>
 
