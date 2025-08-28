@@ -47,14 +47,15 @@ export default function Overview({}) {
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysSince = Math.floor((today - investmentdate) / msPerDay);
 
-  const hasReferral = referralData.points >= 1;
-  const dateError = daysSince === 0 ? 20 : 20 * (daysSince + 1);
+  const hasReferral = referralData.points.length >= 1;
+  console.log(referralData.points.length)
+  const dateError = daysSince === 0 ? 0 : 20 * (daysSince);
 
   // If referral → fixed 25%, else use dateError
-  const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
+  const percent = hasReferral ? 25 * daysSince : dateError;
   const points = referralData.points;
-
-  const earningPoint = points === 0 ? 1 : points
+  
+  let referralBalance = points.reduce((i,index)=> i + index, 0)
 
   const Invest = async (e) => {
     if (referralData.depositBalance < e) {
@@ -65,6 +66,7 @@ export default function Overview({}) {
     try {
       setIsloading(true);
       const userRef = doc(db, "users", currentUser);
+     
       const transactionRef = collection(
         db,
         "users",
@@ -75,6 +77,15 @@ export default function Overview({}) {
         await updateDoc(userRef, {
           investmentdate: serverTimestamp(),
         });
+
+        if (!referralData?.refUid) {
+          console.log('no referral id')
+        } else {
+          const refRef = doc(db, "users", referralData.refUid);
+          await updateDoc(refRef, {
+            referralCount: [...referralData.points, e]
+          });
+        }
       }
       await updateDoc(userRef, {
         investmentBalance: increment(e),
@@ -121,7 +132,7 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {(((referralData.investmentBalance * percent) / 100) * earningPoint).toLocaleString()}
+            {(((referralBalance * 25) / 100) + ((referralData.investmentBalance * percent) / 100)).toLocaleString()}
           </h1>
         </div>
 
@@ -142,9 +153,9 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(
-              (referralData.investmentBalance * percent) / 100 +
-              referralData.depositBalance +
-              referralData.investmentBalance
+              ((referralBalance * 25) / 100) + ((referralData.investmentBalance * percent) / 100) +
+             ( referralData.depositBalance +
+              referralData.investmentBalance)
             ).toLocaleString()}
           </h1>
         </div>
@@ -156,9 +167,7 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(
-              ((referralData.investmentBalance * percent) / 100) *
-              points
-            ).toLocaleString()}
+              (referralBalance * 25) / 100).toLocaleString()}
           </h1>
         </div>
       </section>

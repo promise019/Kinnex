@@ -71,17 +71,20 @@ export default function Withdraw() {
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysSince = Math.floor((today - investmentdate) / msPerDay);
 
-  const hasReferral = referralData.points >= 1;
-  const dateError = daysSince === 0 ? 20 : 20 * (daysSince + 1);
+  const hasReferral = referralData.points.length >= 1;
+  console.log(referralData.points.length);
+  const dateError = daysSince === 0 ? 0 : 20 * daysSince;
 
   // If referral → fixed 25%, else use dateError
-  const percent = hasReferral ? 25 * (daysSince + 1) : dateError;
-  const points = referralData.points === 0 ? 1 : referralData.points;
-  const earningPoint = points === 0 ? 1 : points
+  const percent = hasReferral ? 25 * daysSince : dateError;
+  const points = referralData.points;
 
-  const calculatedEarnings = (referralData.investmentBalance * percent) / 100 * earningPoint;
+  let referralBalance = points.reduce((i, index) => i + index, 0);
 
-  const totalAvailable = referralData.depositBalance + calculatedEarnings;
+  const totalAvailable =
+    referralData.depositBalance +
+    ((referralBalance * 25) / 100) +
+    ((referralData.investmentBalance * percent) / 100);
 
   const submitBankDetails = async () => {
     const newErrors = {};
@@ -206,7 +209,7 @@ export default function Withdraw() {
             <span>Available Balance:</span>
             <span className="text-black font-bold text-lg">
               &#8358;
-              {totalAvailable}
+              {totalAvailable.toLocaleString()}
             </span>
           </p>
         </section>

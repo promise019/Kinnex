@@ -22,7 +22,7 @@ export const userDataContext = createContext();
 export default function UserDataProvider({ children }) {
   const [referralData, setReferralData] = useState({
     link: "",
-    points: 0,
+    points: [],
     email: "",
     Firstname: "",
     Lastname: "",
@@ -30,6 +30,7 @@ export default function UserDataProvider({ children }) {
     investmentBalance: 0,
     depositBalance: 0,
     bankDetails: {},
+    refUid:''
   });
   const [refList, setRefList] = useState([]);
 
@@ -60,6 +61,7 @@ export default function UserDataProvider({ children }) {
           investmentBalance: userData.investmentBalance,
           depositBalance: userData.depositBalance,
           bankDetails: userData?.bankDetails,
+          refUid: userData.ReferredBy
         });
 
         setInvestmentdate(userData?.investmentdate?.toDate() || null);

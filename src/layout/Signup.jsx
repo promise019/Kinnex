@@ -88,12 +88,6 @@ export default function Signup() {
                 const referrer = refSnap.docs[0];
                 const referrerUID = referrer.id;
 
-                // Increment referrer's referralCount
-                const referrerDocRef = doc(db, "users", referrerUID);
-                updateDoc(referrerDocRef, {
-                  referralCount: increment(1),
-                });
-
                 //create a collection of users
                 const refs = collection(db, "users", referrerUID, "refs");
                 const date = new Date();
@@ -114,7 +108,7 @@ export default function Signup() {
                   ReferralCode: user.uid,
                   ReferredBy: referrerCode,
                   createdAt: serverTimestamp(),
-                  referralCount: 0,
+                  referralCount: [],
                   depositBalance: 0,
                   investmentBalance: 0,
                   activeInvestment: 0,
@@ -128,7 +122,7 @@ export default function Signup() {
                   ReferralCode: user.uid,
                   ReferredBy: null,
                   createdAt: serverTimestamp(),
-                  referralCount: 0,
+                  referralCount: [],
                   depositBalance: 0,
                   investmentBalance: 0,
                   activeInvestment: 0,
@@ -155,7 +149,7 @@ export default function Signup() {
             ReferralCode: user.uid,
             ReferredBy: null,
             createdAt: serverTimestamp(),
-            referralCount: 0,
+            referralCount: [],
             depositBalance: 0,
             investmentBalance: 0,
             activeInvestment: 0,
