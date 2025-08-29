@@ -60,136 +60,121 @@ export default function Signup() {
   };
 
   //user data submission logic
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-
-    if (firstname === "" || lastname === "" || email === "")
-      return toast.error("Please fill the form below");
-
+    if (firstname === "" || lastname === "" || email === "") {
+      toast.error("Please fill the form below");
+      return;
+    }
+  
     setIsloading(true);
-
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((usercredential) => {
-        const user = usercredential.user;
-        const docRef = doc(db, "users", user.uid);
-
-        // Check if referral code exists
-        if (referrerCode) {
-          console.log(referrerCode);
-          const refQuery = query(
-            collection(db, "users"),
-            where("ReferralCode", "==", referrerCode)
-          );
-
-          //get corresponding document
-          getDocs(refQuery)
-            .then((refSnap) => {
-              if (!refSnap.empty) {
-                const referrer = refSnap.docs[0];
-                const referrerUID = referrer.id;
-
-                //create a collection of users
-                const refs = collection(db, "users", referrerUID, "refs");
-                const date = new Date();
-                addDoc(refs, {
-                  date: date.toLocaleDateString("default", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }),
-                  name: firstname,
-                });
-
-                // Save new user with referrer info
-                return setDoc(docRef, {
-                  Firstname: firstname,
-                  Lastname: lastname,
-                  Email: email,
-                  ReferralCode: user.uid,
-                  ReferredBy: referrerCode,
-                  createdAt: serverTimestamp(),
-                  referralCount: [],
-                  depositBalance: 0,
-                  investmentBalance: 0,
-                  activeInvestment: 0,
-                });
-              } else {
-                // Referral code not found, proceed without it
-                return setDoc(docRef, {
-                  Firstname: firstname,
-                  Lastname: lastname,
-                  Email: email,
-                  ReferralCode: user.uid,
-                  ReferredBy: null,
-                  createdAt: serverTimestamp(),
-                  referralCount: [],
-                  depositBalance: 0,
-                  investmentBalance: 0,
-                  activeInvestment: 0,
-                });
-              }
-            })
-            .then(() => {
-              toast.success("Account successfully created");
-              setIsloading(false);
-              navigate("/registration/login");
-            })
-            .catch((err) => {
-              console.log(err.code);
-              toast.error("Error creating account");
-              setIsloading(false);
-              setAgree(false);
-            });
-        } else {
-          // No referral code provided
-          setDoc(docRef, {
+  
+    try {
+      const usercredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = usercredential.user;
+      const docRef = doc(db, "users", user.uid);
+  
+      if (referrerCode) {
+        // find referrer
+        const refQuery = query(
+          collection(db, "users"),
+          where("ReferralCode", "==", referrerCode)
+        );
+        const refSnap = await getDocs(refQuery);
+  
+        if (!refSnap.empty) {
+          const referrerDoc = refSnap.docs[0];
+          const referrerUID = referrerDoc.id;
+          const referrerDocRef = doc(db, "users", referrerUID);
+  
+          // add referral entry in referrer’s "refs" subcollection
+          const refs = collection(db, "users", referrerUID, "refs");
+          const date = new Date();
+          await addDoc(refs, {
+            date: date.toLocaleDateString("default", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }),
+            name: firstname,
+          });
+  
+          // create the new user doc (init numeric fields to 0)
+          await setDoc(docRef, {
             Firstname: firstname,
             Lastname: lastname,
             Email: email,
             ReferralCode: user.uid,
-            ReferredBy: null,
+            ReferredBy: referrerCode,
+            referred: 0,
             createdAt: serverTimestamp(),
             referralCount: [],
             depositBalance: 0,
             investmentBalance: 0,
             activeInvestment: 0,
-          })
-            .then(() => {
-              toast.success("Account successfully created");
-              setIsloading(false);
-              navigate("/registration/login");
-            })
-            .catch((err) => {
-              console.log(err.code);
-              toast.error("Error creating account");
-              setIsloading(false);
-              setAgree(false);
-            });
+          });
+  
+          // increment referrer's referred count
+          await updateDoc(referrerDocRef, {
+            referred: increment(1),
+          });
+        } else {
+          // referral code not found — create user without referrer
+          await setDoc(docRef, {
+            Firstname: firstname,
+            Lastname: lastname,
+            Email: email,
+            ReferralCode: user.uid,
+            ReferredBy: null,
+            referred: 0,
+            createdAt: serverTimestamp(),
+            referralCount: [],
+            depositBalance: 0,
+            investmentBalance: 0,
+            activeInvestment: 0,
+          });
         }
-      })
-      .catch((error) => {
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            toast.error("email already in use");
-            break;
-          case "auth/invalid-email":
-            toast.error("invalid email");
-            break;
-          case "auth/weak-password":
-            toast.error("weak password");
-            break;
-          default:
-            toast.error("unable to create user");
-            break;
-        }
-        setIsloading(false);
-        console.log(error.code);
-      })
-      .finally(() => {
-        setIsloading(false);
-        setAgree(false);
-      });
+      } else {
+        // no referrer
+        await setDoc(docRef, {
+          Firstname: firstname,
+          Lastname: lastname,
+          Email: email,
+          ReferralCode: user.uid,
+          ReferredBy: null,
+          referred: 0,
+          createdAt: serverTimestamp(),
+          referralCount: [],
+          depositBalance: 0,
+          investmentBalance: 0,
+          activeInvestment: 0,
+        });
+      }
+  
+      toast.success("Account successfully created");
+      navigate("/registration/login");
+    } catch (error) {
+      console.log(error.code || error);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          toast.error("email already in use");
+          break;
+        case "auth/invalid-email":
+          toast.error("invalid email");
+          break;
+        case "auth/weak-password":
+          toast.error("weak password");
+          break;
+        default:
+          toast.error("unable to create user");
+          break;
+      }
+    } finally {
+      setIsloading(false);
+      setAgree(false);
+    }
   }
+  
 
   return (
     <div className="space-y-2 ">

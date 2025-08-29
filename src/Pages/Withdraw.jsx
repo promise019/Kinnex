@@ -52,10 +52,10 @@ export default function Withdraw() {
   const { referralData, investmentdate } = useContext(userDataContext);
 
   const [withdrawalData, setWithdrawalData] = useState({
-    amount: "",
-    accountNo: referralData?.bankDetails?.accountNo,
-    bank: referralData?.bankDetails?.bank,
-    name: referralData?.bankDetails?.name,
+    amount: 0,
+    accountNo: "",
+    bank: "",
+    name: "",
     userId: currentUser,
   });
 
@@ -83,24 +83,27 @@ export default function Withdraw() {
 
   const totalAvailable =
     referralData.depositBalance +
-    ((referralBalance * 25) / 100) +
-    ((referralData.investmentBalance * percent) / 100);
+    (((referralBalance * 25) / 100 )+
+      ((referralData.investmentBalance * 20) / 100) * daysSince) -
+     ( ((referralData.referralEarningsWithdrawn || 0)) + (referralData.investmentEarningsWithdrawn || 0))
+
+  // referralData.depositBalance + ((referralBalance * 25) / 100) + ((referralData.investmentBalance * 20) / 100);
 
   const submitBankDetails = async () => {
     const newErrors = {};
     if (
-      Number(withdrawalData.amount) < 100 ||
+      Number(withdrawalData.amount) < 1000 ||
       withdrawalData.amount > totalAvailable
     ) {
       newErrors.amount = true;
     }
-    if (withdrawalData.accountNo.length !== 10) {
+    if (withdrawalData.accountNo?.length !== 10) {
       newErrors.accountNo = true;
     }
     if (withdrawalData.bank === "Bank" || withdrawalData.bank === "") {
       newErrors.bank = true;
     }
-    if (withdrawalData.name.trim() === "") {
+    if (withdrawalData.name?.trim() === "") {
       newErrors.name = true;
     }
 
@@ -126,37 +129,95 @@ export default function Withdraw() {
         { merge: true }
       );
 
+      // // Deduct from depositBalance first
+      // if (withdrawalData.amount >= referralData.depositBalance) {
+      //   const depositDeduction = referralData.depositBalance;
+      //   withdrawalData.amount -= depositDeduction;
+
+      //   await updateDoc(detailsRef, {
+      //     depositBalance: increment(-depositDeduction),
+      //   });
+      // } else {
+      //   const depositDeduction = withdrawalData.amount;
+      //   withdrawalData.amount = 0;
+
+      //   await updateDoc(detailsRef, {
+      //     depositBalance: increment(-depositDeduction),
+      //   });
+      // }
+
+      // // If there's still a remaining amount, account for calculated earnings
+      // if (withdrawalData.amount > 0) {
+      //   if (withdrawalData.amount >= calculatedEarnings) {
+      //     withdrawalData.amount -= calculatedEarnings;
+      //   } else {
+      //     withdrawalData.amount = 0;
+      //   }
+      // }
+
+      // // If there's still a remaining amount, deduct from investmentBalance
+      // if (withdrawalData.amount > 0) {
+      //   await updateDoc(detailsRef, {
+      //     investmentBalance: increment(-withdrawalData.amount),
+      //   });
+      // }
+
       // Deduct from depositBalance first
-      if (withdrawalData.amount >= referralData.depositBalance) {
+      let remaining = Number(withdrawalData.amount);
+
+      // Deduct from investment earnings if still remaining
+      if (remaining > 0) {
+        const investAvailable = referralData.investmentBalance * 0.2; // 20% of investments
+
+        const investDeduction = Math.min(remaining, investAvailable);
+
+        remaining -= investDeduction;
+
+        await updateDoc(detailsRef, {
+          investmentEarningsWithdrawn: increment(investDeduction || 0),
+        });
+      }
+
+      if (remaining >= referralData.depositBalance) {
         const depositDeduction = referralData.depositBalance;
-        withdrawalData.amount -= depositDeduction;
+        remaining -= depositDeduction;
 
         await updateDoc(detailsRef, {
           depositBalance: increment(-depositDeduction),
         });
       } else {
-        const depositDeduction = withdrawalData.amount;
-        withdrawalData.amount = 0;
+        const depositDeduction = remaining;
+        remaining = 0;
 
         await updateDoc(detailsRef, {
           depositBalance: increment(-depositDeduction),
         });
       }
 
-      // If there's still a remaining amount, account for calculated earnings
-      if (withdrawalData.amount > 0) {
-        if (withdrawalData.amount >= calculatedEarnings) {
-          withdrawalData.amount -= calculatedEarnings;
-        } else {
-          withdrawalData.amount = 0;
-        }
+      // Deduct from referral earnings (25% of points - already withdrawn)
+      if (remaining > 0) {
+        const referralBalance = referralData.points.reduce(
+          (i, index) => i + index,
+          0
+        );
+        const referralAvailable =
+          referralBalance * 0.25 -
+          (referralData.referralEarningsWithdrawn || 0);
+
+        const refEarningsDeduction = Math.min(remaining, referralAvailable);
+
+        await updateDoc(detailsRef, {
+          referralEarningsWithdrawn:
+            (referralData.referralEarningsWithdrawn || 0) +
+            refEarningsDeduction,
+        });
+
+        remaining -= refEarningsDeduction;
       }
 
-      // If there's still a remaining amount, deduct from investmentBalance
-      if (withdrawalData.amount > 0) {
-        await updateDoc(detailsRef, {
-          investmentBalance: increment(-withdrawalData.amount),
-        });
+      if (remaining > 0.01) {
+        console.warn("Remaining not fully deducted:", remaining);
+        // optionally update a debug field in Firestore if you want visibility
       }
 
       const date = new Date();
@@ -272,6 +333,7 @@ export default function Withdraw() {
           <Button
             className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold lg:w-fit"
             onClick={() => submitBankDetails()}
+            // disabled={true}
           >
             Withdraw
           </Button>

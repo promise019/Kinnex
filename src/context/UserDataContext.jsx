@@ -29,8 +29,11 @@ export default function UserDataProvider({ children }) {
     activeInvestment: 0,
     investmentBalance: 0,
     depositBalance: 0,
+    referred:0,
     bankDetails: {},
-    refUid:''
+    refUid:'',
+    referralEarningsWithdrawn:0,
+    investmentEarningsWithdrawn:0,
   });
   const [refList, setRefList] = useState([]);
 
@@ -61,7 +64,10 @@ export default function UserDataProvider({ children }) {
           investmentBalance: userData.investmentBalance,
           depositBalance: userData.depositBalance,
           bankDetails: userData?.bankDetails,
-          refUid: userData.ReferredBy
+          referred:userData?.referred,
+          refUid: userData.ReferredBy,
+          referralEarningsWithdrawn:userData?.referralEarningsWithdrawn,
+          investmentEarningsWithdrawn:userData?.investmentEarningsWithdrawn
         });
 
         setInvestmentdate(userData?.investmentdate?.toDate() || null);

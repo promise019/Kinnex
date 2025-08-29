@@ -113,7 +113,7 @@ export default function Invite() {
           <div className='flex justify-between'>
             <h1 className='font-bold'>Your Referrals</h1>
             <h1 className='bg-purple-300 p-1 text-sm rounded-xl text-blue-600 font-bold w-fit'>
-              {referralData.points} Total
+              {referralData.referred} Total
             </h1>
           </div>
 

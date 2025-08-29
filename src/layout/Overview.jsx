@@ -5,13 +5,24 @@ import PaystackButton from "../component/PaystackButton";
 import { userDataContext } from "../context/UserDataContext";
 import { useContext, useEffect, useState } from "react";
 import Button from "../component/Button";
-import {
-  addDoc,
-  collection,
-  doc,
-  increment,
-  serverTimestamp,
-  updateDoc,
+// import {
+//   addDoc,
+//   collection,
+//   doc,
+//   increment,
+//   serverTimestamp,
+//   updateDoc,
+// } from "firebase/firestore";
+// import { db } from "../firebase";
+
+import { 
+  doc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  increment, 
+  serverTimestamp, 
+  runTransaction 
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -46,16 +57,17 @@ export default function Overview({}) {
 
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysSince = Math.floor((today - investmentdate) / msPerDay);
+  console.log(daysSince)
 
   const hasReferral = referralData.points.length >= 1;
-  console.log(referralData.points.length)
-  const dateError = daysSince === 0 ? 0 : 20 * (daysSince);
+  console.log(referralData.points.length);
+  const dateError = daysSince === 0 ? 0 : 20 * daysSince;
 
   // If referral → fixed 25%, else use dateError
   const percent = hasReferral ? 25 * daysSince : dateError;
   const points = referralData.points;
-  
-  let referralBalance = points.reduce((i,index)=> i + index, 0)
+
+  let referralBalance = points.reduce((i, index) => i + index, 0);
 
   const Invest = async (e) => {
     if (referralData.depositBalance < e) {
@@ -66,7 +78,7 @@ export default function Overview({}) {
     try {
       setIsloading(true);
       const userRef = doc(db, "users", currentUser);
-     
+
       const transactionRef = collection(
         db,
         "users",
@@ -79,14 +91,21 @@ export default function Overview({}) {
         });
 
         if (!referralData?.refUid) {
-          console.log('no referral id')
+          console.log("no referral id");
         } else {
           const refRef = doc(db, "users", referralData.refUid);
-          await updateDoc(refRef, {
-            referralCount: [...referralData.points, e]
+          await runTransaction(db, async (transaction) => {
+            const snap = await transaction.get(refRef);
+            if (!snap.exists()) throw new Error("Referrer not found");
+  
+            const currentArray = snap.data().referralCount || [];
+            const updatedArray = [...currentArray, e]; // push, allow duplicates
+  
+            transaction.update(refRef, { referralCount: updatedArray });
           });
         }
       }
+      
       await updateDoc(userRef, {
         investmentBalance: increment(e),
         activeInvestment: increment(1),
@@ -132,7 +151,12 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {(((referralBalance * 25) / 100) + ((referralData.investmentBalance * percent) / 100)).toLocaleString()}
+            {(
+              (referralBalance * 25) / 100 +
+              (((referralData.investmentBalance * 20) / 100) * daysSince ) -
+              ((referralData.referralEarningsWithdrawn || 0) +
+                (referralData.investmentEarningsWithdrawn || 0))
+            ).toLocaleString()}
           </h1>
         </div>
 
@@ -153,9 +177,11 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(
-              ((referralBalance * 25) / 100) + ((referralData.investmentBalance * percent) / 100) +
-             ( referralData.depositBalance +
-              referralData.investmentBalance)
+              (referralBalance * 25) / 100 +
+              (((referralData.investmentBalance * 20) / 100) * daysSince) +
+              (referralData.depositBalance + referralData.investmentBalance) -
+              ((referralData.referralEarningsWithdrawn || 0) +
+                (referralData.investmentEarningsWithdrawn || 0))
             ).toLocaleString()}
           </h1>
         </div>
@@ -167,7 +193,9 @@ export default function Overview({}) {
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
             {(
-              (referralBalance * 25) / 100).toLocaleString()}
+              (referralBalance * 25) / 100 -
+              (referralData.referralEarningsWithdrawn || 0)
+            ).toLocaleString()}
           </h1>
         </div>
       </section>
@@ -229,7 +257,7 @@ export default function Overview({}) {
               </table>
               <Button
                 onClick={() => Invest(item.amount)}
-                disabled={isloading}
+                disabled={isloading || item.plan >= 6}
                 className={
                   "text-white bg-blue-800 rounded-lg w-full font-bold p-3 space-x-3 disabled:bg-blue-400"
                 }
