@@ -129,39 +129,6 @@ export default function Withdraw() {
         { merge: true }
       );
 
-      // // Deduct from depositBalance first
-      // if (withdrawalData.amount >= referralData.depositBalance) {
-      //   const depositDeduction = referralData.depositBalance;
-      //   withdrawalData.amount -= depositDeduction;
-
-      //   await updateDoc(detailsRef, {
-      //     depositBalance: increment(-depositDeduction),
-      //   });
-      // } else {
-      //   const depositDeduction = withdrawalData.amount;
-      //   withdrawalData.amount = 0;
-
-      //   await updateDoc(detailsRef, {
-      //     depositBalance: increment(-depositDeduction),
-      //   });
-      // }
-
-      // // If there's still a remaining amount, account for calculated earnings
-      // if (withdrawalData.amount > 0) {
-      //   if (withdrawalData.amount >= calculatedEarnings) {
-      //     withdrawalData.amount -= calculatedEarnings;
-      //   } else {
-      //     withdrawalData.amount = 0;
-      //   }
-      // }
-
-      // // If there's still a remaining amount, deduct from investmentBalance
-      // if (withdrawalData.amount > 0) {
-      //   await updateDoc(detailsRef, {
-      //     investmentBalance: increment(-withdrawalData.amount),
-      //   });
-      // }
-
       // Deduct from depositBalance first
       let remaining = Number(withdrawalData.amount);
 
@@ -169,7 +136,7 @@ export default function Withdraw() {
       if (remaining > 0) {
         const investAvailable = referralData.investmentBalance * 0.2; // 20% of investments
 
-        const investDeduction = Math.min(remaining, investAvailable);
+        const investDeduction = Math.min(remaining, investAvailable);// returns the smallest amount 
 
         remaining -= investDeduction;
 
@@ -333,7 +300,9 @@ export default function Withdraw() {
           <Button
             className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold lg:w-fit"
             onClick={() => submitBankDetails()}
-            // disabled={true}
+            disabled={today.getHours() >= 18 || today.getHours() < 9
+              ? true
+              : false }
           >
             Withdraw
           </Button>

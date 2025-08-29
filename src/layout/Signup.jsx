@@ -33,8 +33,8 @@ export default function Signup() {
   }, [searchParams]);
 
   const [showpassword, setShowpassword] = useState(false);
-  const [agree, setAgree] = useState(true); //terms and conditions and privacy policy
-  const [isloading, setIsloading] = useState(false); //loading component
+  const [agree, setAgree] = useState(true); //terms and conditions and privacy policy state
+  const [isloading, setIsloading] = useState(false); //loading state
 
   const navigate = useNavigate();
 
@@ -232,6 +232,7 @@ export default function Signup() {
             required={true}
           />
 
+          {/* hide and show password component */}
           <HideShowComponent
             className={
               "w-7 absolute top-104 right-7 md:top-93 md:right-11 lg:top-97 lg:right-13 xl:right-21 xl:top-102"

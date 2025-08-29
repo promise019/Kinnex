@@ -1,28 +1,18 @@
 import { toast, ToastContainer } from "react-toastify";
 import timer from "../assets/icon/Frame (9).svg";
 import invest from "../assets/icon/Invest.svg";
-import PaystackButton from "../component/PaystackButton";
 import { userDataContext } from "../context/UserDataContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from "../component/Button";
-// import {
-//   addDoc,
-//   collection,
-//   doc,
-//   increment,
-//   serverTimestamp,
-//   updateDoc,
-// } from "firebase/firestore";
-// import { db } from "../firebase";
 
-import { 
-  doc, 
-  updateDoc, 
-  collection, 
-  addDoc, 
-  increment, 
-  serverTimestamp, 
-  runTransaction 
+import {
+  doc,
+  updateDoc,
+  collection,
+  addDoc,
+  increment,
+  serverTimestamp,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -48,26 +38,23 @@ const plans = [
 
 export default function Overview({}) {
   const { referralData, investmentdate } = useContext(userDataContext);
-  const [isloading, setIsloading] = useState(false);
+  const [isloading, setIsloading] = useState(false); //loading state
   const currentUser =
     sessionStorage.getItem("kinnex-login") ||
     localStorage.getItem("kinnex-login");
 
   const today = new Date();
-
   const msPerDay = 1000 * 60 * 60 * 24;
-  const daysSince = Math.floor((today - investmentdate) / msPerDay);
-  console.log(daysSince)
+  const daysSince = Math.floor((today - investmentdate) / msPerDay); // calculation for the the since investment to current date
 
   const hasReferral = referralData.points.length >= 1;
-  console.log(referralData.points.length);
   const dateError = daysSince === 0 ? 0 : 20 * daysSince;
 
   // If referral → fixed 25%, else use dateError
   const percent = hasReferral ? 25 * daysSince : dateError;
   const points = referralData.points;
 
-  let referralBalance = points.reduce((i, index) => i + index, 0);
+  let referralBalance = points.reduce((i, index) => i + index, 0); // sum of referral count
 
   const Invest = async (e) => {
     if (referralData.depositBalance < e) {
@@ -94,18 +81,20 @@ export default function Overview({}) {
           console.log("no referral id");
         } else {
           const refRef = doc(db, "users", referralData.refUid);
+
+          // allow realtime update on refs referralCount immediately after investment
           await runTransaction(db, async (transaction) => {
             const snap = await transaction.get(refRef);
             if (!snap.exists()) throw new Error("Referrer not found");
-  
+
             const currentArray = snap.data().referralCount || [];
             const updatedArray = [...currentArray, e]; // push, allow duplicates
-  
+
             transaction.update(refRef, { referralCount: updatedArray });
           });
         }
       }
-      
+
       await updateDoc(userRef, {
         investmentBalance: increment(e),
         activeInvestment: increment(1),
@@ -151,9 +140,9 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {(
+            {( // total of all earnings
               (referralBalance * 25) / 100 +
-              (((referralData.investmentBalance * 20) / 100) * daysSince ) -
+              ((referralData.investmentBalance * 20) / 100) * daysSince -
               ((referralData.referralEarningsWithdrawn || 0) +
                 (referralData.investmentEarningsWithdrawn || 0))
             ).toLocaleString()}
@@ -176,9 +165,9 @@ export default function Overview({}) {
           </span>
           <h1 className="font-bold text-xl">
             <span>&#8358;</span>{" "}
-            {(
+            {( //sum total of every available amount
               (referralBalance * 25) / 100 +
-              (((referralData.investmentBalance * 20) / 100) * daysSince) +
+              ((referralData.investmentBalance * 20) / 100) * daysSince +
               (referralData.depositBalance + referralData.investmentBalance) -
               ((referralData.referralEarningsWithdrawn || 0) +
                 (referralData.investmentEarningsWithdrawn || 0))
