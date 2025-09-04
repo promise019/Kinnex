@@ -32,6 +32,7 @@ export default function PaystackButton({
     <button
       onClick={amount < 3000 ? null : payWithPaystack}
       className={className}
+      disabled
     >
       {children}
     </button>

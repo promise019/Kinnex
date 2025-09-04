@@ -9,8 +9,10 @@ export function LoadingIndicator1({ className }) {
   );
 }
 
-export function InteractionBlocker({ className }) {
+export function InteractionBlocker({ className, children }) {
   return (
-    <div className='bg-transparent w-screen h-screen fixed top-0 left-0'></div>
+    <div className='bg-transparent w-screen h-screen fixed top-0 left-0'>
+      {children}
+    </div>
   );
 }

@@ -19,6 +19,10 @@ import {
 import { db } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import emailjs from "emailjs-com";
+import {
+  InteractionBlocker,
+  LoadingIndicator1,
+} from "../component/Loading indicator";
 
 const banks = [
   "Bank",
@@ -60,6 +64,28 @@ export default function Withdraw() {
   });
 
   const [errors, setErrors] = useState({});
+  const [isloading, setIsloading] = useState(false);
+  const [lastWithdrawal, setLastWithdrawal] = useState(null);
+  const [canWithdraw, setCanWithdraw] = useState(true);
+
+  useEffect(() => {
+    const storedDate = localStorage.getItem("lastwithdrawal");
+
+    if (storedDate) {
+      setLastWithdrawal(new Date(storedDate));
+      checkIfAllowed(storedDate);
+    }
+  }, [isloading]);
+
+  // Function to check if withdrawal is allowed
+  const checkIfAllowed = (storedDate) => {
+    const today = new Date().toDateString();
+    if (new Date(storedDate).toDateString() === today) {
+      setCanWithdraw(false);
+    } else {
+      setCanWithdraw(true);
+    }
+  };
 
   const handleWithdrawalData = (e) => {
     const { value, name } = e.target;
@@ -83,9 +109,10 @@ export default function Withdraw() {
 
   const totalAvailable =
     referralData.depositBalance +
-    (((referralBalance * 25) / 100 )+
+    ((referralBalance * 25) / 100 +
       ((referralData.investmentBalance * 20) / 100) * daysSince) -
-     ( ((referralData.referralEarningsWithdrawn || 0)) + (referralData.investmentEarningsWithdrawn || 0))
+    ((referralData.referralEarningsWithdrawn || 0) +
+      (referralData.investmentEarningsWithdrawn || 0));
 
   // referralData.depositBalance + ((referralBalance * 25) / 100) + ((referralData.investmentBalance * 20) / 100);
 
@@ -107,6 +134,11 @@ export default function Withdraw() {
       newErrors.name = true;
     }
 
+    if (!canWithdraw) {
+      toast.warn("You have reached withdrawal limit for today");
+      return;
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error("Input Valid Bank Details");
@@ -114,6 +146,7 @@ export default function Withdraw() {
     }
 
     try {
+      setIsloading(true);
       setErrors({});
       const detailsRef = doc(db, "users", currentUser);
       const transactionRef = collection(
@@ -136,7 +169,7 @@ export default function Withdraw() {
       if (remaining > 0) {
         const investAvailable = referralData.investmentBalance * 0.2; // 20% of investments
 
-        const investDeduction = Math.min(remaining, investAvailable);// returns the smallest amount 
+        const investDeduction = Math.min(remaining, investAvailable); // returns the smallest amount
 
         remaining -= investDeduction;
 
@@ -217,9 +250,15 @@ export default function Withdraw() {
         .catch((err) => console.log(err));
 
       console.log("submit successful");
+      const now = new Date();
+      setLastWithdrawal(now);
+      setCanWithdraw(false);
+      localStorage.setItem("lastwithdrawal", now.toISOString());
       toast.success("Bank Details Submitted");
+      setIsloading(false);
     } catch (error) {
       console.log(error);
+      setIsloading(false);
       toast.error("Error Submiting Details");
     }
   };
@@ -227,6 +266,11 @@ export default function Withdraw() {
   return (
     <div className="bg-gray-100 p-3 min-h-screen z-4 md:ml-[30%] lg:ml-[25%] md:w-[70%] lg:w-[75%]">
       <ToastContainer />
+      {isloading && (
+        <InteractionBlocker>
+          <LoadingIndicator1 className={"top-75 ml-[39%] md:ml-[17%]"} />
+        </InteractionBlocker>
+      )}
       <Header Page={"Withdraw Funds"} />
       <p className="mt-12 mb-3">Withdraw funds from your investment account</p>
       <main className="bg-white p-4 rounded-lg space-y-7 md:w-full">
@@ -298,11 +342,11 @@ export default function Withdraw() {
           <br className="hidden xl:block" />
 
           <Button
-            className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold lg:w-fit"
+            className="w-full p-2.5 rounded-lg bg-blue-700 text-white font-bold disabled:bg-blue-400 lg:w-fit"
             onClick={() => submitBankDetails()}
-            disabled={today.getHours() >= 18 || today.getHours() < 9
-              ? true
-              : false }
+            disabled={
+              today.getHours() >= 18 || today.getHours() < 9 ? true : false
+            }
           >
             Withdraw
           </Button>
